@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { tournament } from "@/lib/config";
 import Navbar from "@/components/Navbar";
+import FooterSponsors from "@/components/FooterSponsors";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -24,12 +25,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-edge/60 mt-20">
+          <FooterSponsors />
           <div className="mx-auto max-w-6xl px-4 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Respawn Gaming Lounge" className="h-8 w-auto" />
-              <span className="text-sm text-muted">
-                © {new Date().getFullYear()} {tournament.organizer}
+              <img
+                src="/logo.png"
+                alt="Respawn Gaming Lounge"
+                className="h-14 w-auto drop-shadow-[0_0_18px_rgba(168,85,247,0.45)]"
+              />
+              <span className="text-lg text-muted/50">×</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/lerf.webp" alt={tournament.partner} className="h-7 w-auto opacity-80" />
+              <span className="ml-1 text-sm text-muted">
+                © {new Date().getFullYear()} {tournament.organizer} × {tournament.partner}
               </span>
             </div>
             <nav className="flex items-center gap-6 text-sm text-muted">

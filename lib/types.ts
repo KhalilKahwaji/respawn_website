@@ -49,3 +49,17 @@ export interface PublicTeam {
   player_nicknames: string[];
   bench_nicknames: string[];
 }
+
+/** A tournament sponsor / partner shown on the Sponsors page and footer. */
+export interface Sponsor {
+  id: string;
+  name: string;
+  /** Public URL of the logo (in /public or remote). */
+  logo_url: string;
+  /** Where clicking the sponsor sends visitors. */
+  website_url: string;
+  /** Optional one-line blurb shown under the name. */
+  blurb?: string;
+  /** Tier controls prominence: "partner" is featured larger than "sponsor". */
+  tier?: "partner" | "sponsor";
+}

@@ -360,6 +360,58 @@ body {
   @apply pill border-violet-400/40 bg-violet-400/10 text-violet-300;
 }
 
+/* ---------- Sponsors ---------- */
+.sponsor-card {
+  @apply card relative flex flex-col items-center justify-center p-8 transition-all duration-300;
+}
+.sponsor-card:hover {
+  border-color: rgba(79, 227, 255, 0.45);
+  box-shadow: 0 0 26px rgba(79, 227, 255, 0.14), 0 12px 44px rgba(0, 0, 0, 0.5);
+  transform: translateY(-4px);
+}
+
+/* Headline partner: animated neon gradient border + brighter glow. */
+.sponsor-card-featured {
+  border-color: transparent;
+  background:
+    linear-gradient(#0d0c15, #0d0c15) padding-box,
+    linear-gradient(120deg, var(--cyan), var(--magenta), var(--violet), var(--cyan)) border-box;
+  background-size: 100% 100%, 300% 300%;
+  border: 1.5px solid transparent;
+  animation: sponsorBorder 8s ease infinite;
+  box-shadow: 0 0 30px rgba(79, 227, 255, 0.12), 0 0 60px rgba(232, 121, 249, 0.08);
+}
+.sponsor-card-featured:hover {
+  box-shadow: 0 0 40px rgba(79, 227, 255, 0.25), 0 0 80px rgba(232, 121, 249, 0.18);
+  transform: translateY(-4px);
+}
+
+.sponsor-logo-wrap {
+  @apply flex items-center justify-center;
+  filter: drop-shadow(0 0 16px rgba(79, 227, 255, 0.18));
+}
+
+@keyframes sponsorBorder {
+  0%, 100% { background-position: 0% 50%, 0% 50%; }
+  50%      { background-position: 0% 50%, 100% 50%; }
+}
+
+/* Skeleton shimmer for the loading state. */
+.sponsor-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.10) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  );
+  background-size: 400% 100%;
+  animation: sponsorShimmer 1.4s ease infinite;
+}
+@keyframes sponsorShimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* ---------- Misc ---------- */
 .section-eyebrow {
   @apply font-mono text-xs uppercase tracking-[0.3em] text-neon-cyan;

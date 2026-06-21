@@ -24,14 +24,26 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <HeroBackground />
         <div className="relative z-10 mx-auto max-w-6xl px-4 pt-16 pb-20 sm:pt-24 sm:pb-28 text-center">
-          <p className="section-eyebrow animate-rise">Official Tournament · Hosted on Faceit</p>
+          <p className="section-eyebrow animate-rise">
+            Official Tournament · A {tournament.organizer} × {tournament.partner} Collaboration
+          </p>
 
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="Respawn"
-            className="mx-auto mt-6 h-24 sm:h-36 w-auto animate-flicker drop-shadow-[0_0_30px_rgba(168,85,247,0.45)]"
-          />
+          {/* Co-branded lockup — Respawn × LERF */}
+          <div className="mx-auto mt-6 flex items-center justify-center gap-5 sm:gap-8 animate-rise">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Respawn"
+              className="h-20 sm:h-32 w-auto animate-flicker drop-shadow-[0_0_30px_rgba(168,85,247,0.45)]"
+            />
+            <span className="font-display text-3xl sm:text-5xl font-black text-muted/70 leading-none">×</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/lerf.webp"
+              alt={tournament.partner}
+              className="h-16 sm:h-24 w-auto drop-shadow-[0_0_30px_rgba(34,211,238,0.35)]"
+            />
+          </div>
 
           <h1 className="mt-4 font-display font-black uppercase leading-none tracking-tight">
             <span className="block text-4xl sm:text-7xl">
@@ -41,7 +53,7 @@ export default function HomePage() {
           </h1>
 
           <p className="mx-auto mt-5 max-w-xl text-base sm:text-lg text-zinc-400">
-            {tournament.organizer} presents a {tournament.format.toLowerCase()} battle for{" "}
+            {tournament.organizer} & {tournament.partner} present a {tournament.format.toLowerCase()} battle for{" "}
             <span className="text-neon-magenta font-semibold">{tournament.prizePool}</span>.
             Bring your five. Earn your respawn.
           </p>
@@ -61,6 +73,22 @@ export default function HomePage() {
             <p className="mt-5 text-sm text-zinc-500">
               {tournament.startDateLabel} · {tournament.location}
             </p>
+            <div className="mx-auto mt-8 max-w-xl rounded-2xl border-2 border-neon-magenta/60 bg-neon-magenta/5 px-6 py-5 animate-pulseGlow">
+              <p className="flex items-center justify-center gap-2 font-display text-sm sm:text-base font-bold uppercase tracking-[0.2em] text-neon-magenta">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-magenta opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-neon-magenta" />
+                </span>
+                Registration closes {tournament.registrationClosesDaysBefore} days before kickoff
+              </p>
+              <p className="mt-3 text-xs uppercase tracking-[0.3em] text-muted">Last day to register</p>
+              <p className="mt-1 font-display text-2xl sm:text-3xl font-black text-white">
+                {tournament.registrationDeadlineLabel}
+              </p>
+              <Link href="/register" className="btn-primary btn-sm mt-4">
+                Register before it closes
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -80,7 +108,8 @@ export default function HomePage() {
         <div className="card mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4">
           <p className="text-sm text-zinc-400">
             <span className="text-neon-cyan font-semibold">Registration deadline:</span>{" "}
-            {tournament.registrationDeadlineLabel}
+            {tournament.registrationDeadlineLabel}{" "}
+            <span className="text-muted">({tournament.registrationClosesDaysBefore} days before kickoff)</span>
           </p>
           <p className="text-sm text-zinc-400">
             Payment via <span className="text-neon-magenta font-semibold">Whish</span> · manual admin approval
