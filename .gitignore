@@ -1,7 +1,42 @@
+# dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# next.js / build output
 .next/
 out/
-.env*.local
-.env
+build/
+dist/
+
+# production / deploy
+.vercel
+
+# typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# env files (keep secrets out of git)
+.env
+.env*.local
+.env.development
+.env.production
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# testing / coverage
+/coverage
+
+# editor / IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
