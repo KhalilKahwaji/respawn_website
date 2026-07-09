@@ -417,7 +417,7 @@ body {
   @apply font-mono text-xs uppercase tracking-[0.3em] text-neon-cyan;
 }
 .code-chip {
-  @apply rounded-lg border border-neon-magenta/40 bg-neon-magenta/5 px-3 py-1.5 font-mono text-sm tracking-widest text-neon-magenta;
+  @apply inline-block break-all rounded-lg border border-neon-magenta/40 bg-neon-magenta/5 px-2 py-1 font-mono text-xs tracking-wide text-neon-magenta sm:px-3 sm:py-1.5 sm:text-sm sm:tracking-widest;
 }
 
 @media (prefers-reduced-motion: reduce) {

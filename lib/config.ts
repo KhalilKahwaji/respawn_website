@@ -45,7 +45,7 @@ export const tournament = {
   registrationDeadlineLabel: deriveRegistrationDeadlineLabel(startDate, REGISTRATION_CLOSES_DAYS_BEFORE),
   prizePool: "$4,000",
   entryFee: "$125 / team",
-  format: "5v5 - Single Elimination (BO1, Finals BO3)",
+  format: "5v5 - Double Elimination",
   maxTeams: 32,
   // Whish payment details
   whishNumber: "+961 81 632 209",

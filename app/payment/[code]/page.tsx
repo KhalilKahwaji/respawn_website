@@ -88,8 +88,8 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
             Your team has been registered and is <span className="text-amber-300 font-semibold">pending payment</span>.
           </p>
           <p className="mt-3 text-sm text-zinc-400">Save your registration code - you'll need it to check status and upload proof:</p>
-          <div className="mt-3 flex items-center justify-center gap-3">
-            <span className="code-chip text-lg px-5 py-2.5">{code}</span>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
+            <span className="code-chip text-sm sm:text-lg px-3 sm:px-5 py-1.5 sm:py-2.5">{code}</span>
             <button onClick={copyCode} className="btn-ghost btn-sm">{copied ? "Copied!" : "Copy"}</button>
           </div>
         </div>
@@ -113,8 +113,8 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
           </div>
           <div className="sm:col-span-2">
             <dt className="field-label">Payment reference (write this in the Whish note)</dt>
-            <dd className="flex items-center gap-3">
-              <span className="code-chip text-base">{code}</span>
+            <dd className="flex flex-wrap items-center gap-3">
+              <span className="code-chip text-xs sm:text-base">{code}</span>
               <button onClick={copyCode} className="btn-ghost btn-sm">{copied ? "Copied!" : "Copy"}</button>
             </dd>
           </div>

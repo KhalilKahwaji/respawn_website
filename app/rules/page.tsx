@@ -13,8 +13,19 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     rules: [
       `${tournament.format}, hosted on Faceit.`,
       `Up to ${tournament.maxTeams} teams. Bracket and seeding are managed on Faceit by Respawn admins.`,
-      "Map veto follows the standard Faceit veto flow for the active CS2 map pool. (Exact veto order will be confirmed before the bracket is published.)",
+      "A loss in the upper bracket drops a team to the lower bracket; a second loss eliminates them. Upper bracket matches are BO1, lower bracket matches are BO3, and the Grand Final is BO5.",
       "Match start times are announced on Discord and on the Faceit championship page.",
+    ],
+  },
+  {
+    id: "game-rules",
+    title: "Game-specific rules",
+    rules: [
+      "Map pool: Ancient, Overpass, Nuke, Mirage, Inferno, Cache, Dust II.",
+      "Which veto process applies depends on that round's match format: upper bracket (BO1), lower bracket (BO3), or the Grand Final (BO5). Team A/Team B assignment for veto purposes follows Faceit seeding for that match.",
+      "BO1 veto: Team A bans a map, Team B bans a map, Team A bans a map, Team B bans a map, Team A bans a map, Team B bans a map. The remaining map is played - a knife round decides starting side.",
+      "BO3 veto: Team A bans a map, Team B bans a map, Team A picks a map (Team B picks starting side), Team B picks a map (Team A picks starting side), Team A bans a map, Team B bans a map. The remaining map is played - a knife round decides starting side.",
+      "BO5 veto: Team A bans a map, Team B bans a map, Team A picks a map (Team B picks starting side), Team B picks a map (Team A picks starting side), Team A picks a map (Team B picks starting side), Team B picks a map (Team A picks starting side). The remaining map is played - a knife round decides starting side.",
     ],
   },
   {
@@ -22,6 +33,8 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     title: "Eligibility",
     rules: [
       "Open to all players unless previously banned from Respawn Gaming Lounge events.",
+      "All players must be at least 18 years old at the time of registration.",
+      "All players must hold Lebanese nationality.",
       "Every player must own CS2 in good standing (no VAC ban on record for CS:GO/CS2).",
       "Players may only be rostered on one team. A Steam account or Faceit account found on two rosters disqualifies the later registration.",
     ],
@@ -30,8 +43,8 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     id: "team-size",
     title: "Team size & substitutes",
     rules: [
-      "Rosters are exactly 5 main players, plus up to 2 optional bench (substitute) players.",
-      "Bench players may swap in between maps, or mid-match only with admin approval (e.g. disconnect emergencies).",
+      "Rosters are exactly 5 main players + 2 substitute players (7 total).",
+      "Substitutes may swap in between maps, or mid-match only with admin approval (e.g. disconnect emergencies).",
       "Roster changes after registration require admin approval and are locked once the bracket is published.",
       "Stand-ins not on the registered roster are not allowed.",
     ],
@@ -60,15 +73,16 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     rules: [
       "Teams have 10 minutes from the official match start to be fully connected, after a 10-minute grace period the match is forfeited 0-1.",
       "Repeated delays across the event can result in removal without refund.",
-      "If a server/platform issue is at fault, admins will pause or reschedule - admin word is final on what counts as a technical issue.",
+      "If a server/platform issue is at fault, admins will pause the match and fix the issue - admin word is final on what counts as a technical issue.",
     ],
   },
   {
     id: "match-rules",
     title: "Match rules",
     rules: [
-      "Matches are played on the Faceit platform with standard competitive CS2 settings (MR12, overtime MR3).",
-      "Pauses: each team gets 2 tactical pauses (30s) per map. Technical pauses require an admin or captain call-out in match chat.",
+      "Matches are organized by the Lebanese Esports Federation and played on the Faceit platform, with standard competitive CS2 settings (MR12, overtime MR3).",
+      "Pauses: each team has 3 tactical pauses (1 minute each) per map.",
+      "Technical timeouts are limited to 1 per team per map, up to 5 minutes, and require an admin or captain call-out in match chat.",
       "Score disputes must be raised with screenshots/demos before the next round of the bracket starts.",
     ],
   },
@@ -104,7 +118,7 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     id: "admin",
     title: "Admin decisions",
     rules: [
-      "Tournament admins have final authority on all disputes, including anything not explicitly covered by these rules.",
+      "Tournament admins, in coordination with the Lebanese Esports Federation, have final authority on all disputes, including anything not explicitly covered by these rules.",
       "Rules may be updated before the event starts; registered captains will be notified on Discord of any changes.",
     ],
   },

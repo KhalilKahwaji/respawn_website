@@ -17,6 +17,14 @@ const SPONSORS: Sponsor[] = [
     blurb: "Official tournament collaborator",
     tier: "partner",
   },
+  {
+    id: "mojitech",
+    name: "Mojitech",
+    logo_url: "/mojitech_logo.webp",
+    website_url: "https://mojitech.net/",
+    blurb: "Where IT needs meet solutions",
+    tier: "sponsor",
+  },
 ];
 
 export async function getSponsors(): Promise<Sponsor[]> {

@@ -31,17 +31,17 @@ export default function Countdown({ target }: { target: string }) {
   ];
 
   return (
-    <div className="flex items-center justify-center gap-3 sm:gap-5" aria-label="Countdown to tournament start">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-4 lg:gap-5" aria-label="Countdown to tournament start">
       {cells.map((c, i) => (
-        <div key={c.label} className="flex items-center gap-3 sm:gap-5">
-          <div className="card-glow flex h-20 w-20 sm:h-24 sm:w-24 flex-col items-center justify-center">
-            <span className="font-display text-3xl sm:text-4xl font-bold text-zinc-50 tabular-nums">
+        <div key={c.label} className="flex items-center gap-1 sm:gap-3 lg:gap-5">
+          <div className="card-glow flex h-14 w-14 sm:h-20 sm:w-20 lg:h-24 lg:w-24 flex-col items-center justify-center">
+            <span className="font-display text-lg sm:text-3xl lg:text-4xl font-bold text-zinc-50 tabular-nums">
               {t ? String(c.v).padStart(2, "0") : "--"}
             </span>
-            <span className="mt-1 text-[10px] uppercase tracking-[0.2em] text-muted">{c.label}</span>
+            <span className="mt-0.5 sm:mt-1 text-[7px] sm:text-[10px] uppercase tracking-[0.12em] sm:tracking-[0.2em] text-muted">{c.label}</span>
           </div>
           {i < cells.length - 1 && (
-            <span className="font-display text-2xl text-neon-magenta neon-magenta">:</span>
+            <span className="font-display text-base sm:text-2xl text-neon-magenta neon-magenta">:</span>
           )}
         </div>
       ))}

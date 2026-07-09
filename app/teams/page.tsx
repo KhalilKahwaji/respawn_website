@@ -35,8 +35,7 @@ export default async function TeamsPage() {
         Approved <span className="neon-magenta">teams</span>
       </h1>
       <p className="mt-3 max-w-2xl text-zinc-400">
-        Every team below has registered and had its payment verified by an admin. Player nicknames only -
-        contact details stay private.
+        Every team below has registered and had its payment verified by an admin.
       </p>
 
       {teams === null ? (
