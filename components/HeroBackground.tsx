@@ -3,7 +3,7 @@ import { CSSProperties } from "react";
 /**
  * Pure-CSS animated hero background: drifting aurora blobs, a slowly panning
  * blueprint grid, a periodic neon scan beam, and floating embers.
- * No client JS — all motion is CSS. Honors prefers-reduced-motion globally.
+ * No client JS - all motion is CSS. Honors prefers-reduced-motion globally.
  */
 
 // Deterministic particle field (fixed values → no hydration mismatch).

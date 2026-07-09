@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { ADMIN_COOKIE_NAME, verifyAdminSessionToken } from "@/lib/admin-auth";
 
 /**
  * DEV-ONLY auth bypass for local demos.
@@ -16,7 +16,7 @@ export const DEV_AUTH_BYPASS =
 export const DEV_ADMIN_EMAIL = "dev@localhost";
 
 /**
- * Service-role client. Server-only — bypasses RLS.
+ * Service-role client. Server-only - bypasses RLS.
  * Never import this from a client component.
  */
 let _service: SupabaseClient | null = null;
@@ -33,53 +33,20 @@ export function serviceClient(): SupabaseClient {
   return _service;
 }
 
-/** Cookie-aware client for reading the signed-in admin session in route handlers / server components. */
-export function sessionClient() {
-  const cookieStore = cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
-            );
-          } catch {
-            // Called from a Server Component — middleware refreshes sessions.
-          }
-        },
-      },
-    },
-  );
-}
-
 /**
- * Verifies the request comes from a signed-in user whose email exists
- * in the `admins` table. Returns the admin email or null.
+ * Verifies the request carries a valid signed admin session cookie (set by
+ * /api/admin/login after checking the shared ADMIN_PASSWORD). Returns a
+ * label for the caller or null if unauthenticated.
  */
 export async function requireAdmin(): Promise<string | null> {
   if (DEV_AUTH_BYPASS) {
-    console.warn("⚠️  DEV_AUTH_BYPASS active — skipping admin auth check");
+    console.warn("⚠️  DEV_AUTH_BYPASS active - skipping admin auth check");
     return DEV_ADMIN_EMAIL;
   }
   try {
-    const supa = sessionClient();
-    const {
-      data: { user },
-    } = await supa.auth.getUser();
-    if (!user?.email) return null;
-    const svc = serviceClient();
-    const { data } = await svc
-      .from("admins")
-      .select("email")
-      .eq("email", user.email.toLowerCase())
-      .maybeSingle();
-    return data ? user.email : null;
+    const token = cookies().get(ADMIN_COOKIE_NAME)?.value;
+    const ok = await verifyAdminSessionToken(token);
+    return ok ? "admin" : null;
   } catch {
     return null;
   }

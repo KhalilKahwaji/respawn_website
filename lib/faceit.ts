@@ -1,5 +1,5 @@
 /**
- * Faceit Data API integration — fully optional.
+ * Faceit Data API integration - fully optional.
  *
  * The Faceit Data API does NOT support registering teams into a championship
  * programmatically on behalf of users, so the official bracket stays on Faceit
@@ -8,7 +8,7 @@
  *
  * If you set FACEIT_API_KEY in .env.local, registration will *verify* each
  * player's Faceit username exists and enrich it with level/ELO. Without a key,
- * everything still works — verification is simply skipped.
+ * everything still works - verification is simply skipped.
  *
  * Docs: https://docs.faceit.com/docs/data-api/data
  */
@@ -64,15 +64,14 @@ export interface FaceitCheckResult {
   exists: boolean;
   level?: number;
   elo?: number;
-  steamMatches?: boolean; // Steam64 on Faceit matches the one submitted
 }
 
 /**
  * Soft verification used during registration: never blocks a registration on
- * API failure — results are surfaced to admins for review instead.
+ * API failure - results are surfaced to admins for review instead.
  */
 export async function verifyFaceitPlayers(
-  players: { faceit_username: string; steam64_id: string }[],
+  players: { faceit_username: string }[],
 ): Promise<FaceitCheckResult[] | null> {
   if (!faceitEnabled()) return null;
   const results: FaceitCheckResult[] = [];
@@ -83,7 +82,6 @@ export async function verifyFaceitPlayers(
       exists: Boolean(fp),
       level: fp?.skill_level,
       elo: fp?.elo,
-      steamMatches: fp?.steam_id_64 ? fp.steam_id_64 === p.steam64_id : undefined,
     });
   }
   return results;

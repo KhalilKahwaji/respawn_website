@@ -10,7 +10,6 @@ interface PlayerForm {
   nickname: string;
   phone: string;
   steam_profile_url: string;
-  steam64_id: string;
   faceit_username: string;
   faceit_profile_url: string;
   discord_username: string;
@@ -21,18 +20,20 @@ const emptyPlayer = (): PlayerForm => ({
   nickname: "",
   phone: "",
   steam_profile_url: "",
-  steam64_id: "",
   faceit_username: "",
   faceit_profile_url: "",
   discord_username: "",
 });
+
+const MAIN_COUNT = 5;
+const MAX_BENCH = 2;
+const MAX_PLAYERS = MAIN_COUNT + MAX_BENCH;
 
 const playerFields: { key: keyof PlayerForm; label: string; placeholder: string; hint?: string }[] = [
   { key: "full_name", label: "Full name", placeholder: "Ali Hassan" },
   { key: "nickname", label: "In-game nickname", placeholder: "s1mple_jr" },
   { key: "phone", label: "Phone number", placeholder: "+961 70 123 456" },
   { key: "steam_profile_url", label: "Steam profile link", placeholder: "https://steamcommunity.com/id/..." },
-  { key: "steam64_id", label: "Steam64 ID", placeholder: "76561198000000000", hint: "17 digits — find it at steamid.io" },
   { key: "faceit_username", label: "Faceit username", placeholder: "faceit_nick" },
   { key: "faceit_profile_url", label: "Faceit profile link", placeholder: "https://www.faceit.com/en/players/..." },
   { key: "discord_username", label: "Discord username", placeholder: "username#0000 or @username" },
@@ -49,7 +50,7 @@ export default function RegisterPage() {
     preferred_contact: "whatsapp",
     notes: "",
   });
-  const [players, setPlayers] = useState<PlayerForm[]>(Array.from({ length: 6 }, emptyPlayer));
+  const [players, setPlayers] = useState<PlayerForm[]>(Array.from({ length: MAIN_COUNT }, emptyPlayer));
   const [captainIndex, setCaptainIndex] = useState(0);
   const [logo, setLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -65,6 +66,15 @@ export default function RegisterPage() {
   const setPlayerField = (i: number, k: keyof PlayerForm, v: string) => {
     setPlayers((ps) => ps.map((p, idx) => (idx === i ? { ...p, [k]: v } : p)));
     setErrors((e) => ({ ...e, [`players.${i}.${k}`]: "" }));
+  };
+
+  const addBenchPlayer = () => {
+    if (players.length >= MAX_PLAYERS) return;
+    setPlayers((ps) => [...ps, emptyPlayer()]);
+  };
+  const removeBenchPlayer = (i: number) => {
+    setPlayers((ps) => ps.filter((_, idx) => idx !== i));
+    setCaptainIndex((c) => (c === i ? 0 : c > i ? c - 1 : c));
   };
 
   const onLogo = (f: File | null) => {
@@ -83,7 +93,7 @@ export default function RegisterPage() {
       ...team,
       players: players.map((p, i) => ({
         ...p,
-        role: i < 5 ? ("main" as const) : ("bench" as const),
+        role: i < MAIN_COUNT ? ("main" as const) : ("bench" as const),
         is_captain: i === captainIndex,
       })),
     }),
@@ -120,7 +130,7 @@ export default function RegisterPage() {
       }
       router.push(`/payment/${encodeURIComponent(json.registration_code)}?new=1`);
     } catch {
-      setFormError("Network error — check your connection and try again.");
+      setFormError("Network error - check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
@@ -133,9 +143,9 @@ export default function RegisterPage() {
         Build your <span className="neon-cyan">roster</span>
       </h1>
       <p className="mt-3 text-zinc-400 max-w-2xl">
-        Exactly <span className="text-neon-cyan">5 main players</span> and{" "}
-        <span className="text-neon-magenta">1 bench player</span>. Entry fee is{" "}
-        {tournament.entryFee} via Whish — payment instructions appear right after you submit.
+        Exactly <span className="text-neon-cyan">5 main players</span>, plus{" "}
+        <span className="text-neon-magenta">up to 2 optional bench players</span>. Entry fee is{" "}
+        {tournament.entryFee} via Whish - payment instructions appear right after you submit.
       </p>
 
       {formError && (
@@ -239,7 +249,7 @@ export default function RegisterPage() {
             <textarea
               id="notes"
               className="input min-h-[80px]"
-              placeholder="Anything we should know — availability, special requests…"
+              placeholder="Anything we should know - availability, special requests…"
               value={team.notes}
               onChange={(e) => setTeamField("notes", e.target.value)}
             />
@@ -251,15 +261,15 @@ export default function RegisterPage() {
       <section className="mt-6">
         <div className="card p-6 sm:p-8">
           <h2 className="font-display text-xl font-bold uppercase tracking-wide">
-            <span className="text-neon-magenta">03</span> Roster — 5 main + 1 bench
+            <span className="text-neon-magenta">03</span> Roster - 5 main + up to 2 bench
           </h2>
           <p className="mt-2 text-sm text-zinc-500">
-            Mark exactly one player as the in-game captain. Steam64 IDs and Faceit usernames must be unique across the whole tournament.
+            Mark exactly one player as the in-game captain. Faceit usernames must be unique across the whole tournament.
           </p>
         </div>
 
         {players.map((p, i) => {
-          const isBench = i === 5;
+          const isBench = i >= MAIN_COUNT;
           return (
             <div
               key={i}
@@ -275,19 +285,30 @@ export default function RegisterPage() {
                     <span className="text-neon-cyan">Player {i + 1}</span>
                   )}
                   <span className="ml-2 text-xs text-zinc-500 font-body normal-case tracking-normal">
-                    {isBench ? "substitute" : "main"}
+                    {isBench ? "substitute · optional" : "main"}
                   </span>
                 </h3>
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-300">
-                  <input
-                    type="radio"
-                    name="captain"
-                    checked={captainIndex === i}
-                    onChange={() => setCaptainIndex(i)}
-                    className="h-4 w-4 accent-fuchsia-400"
-                  />
-                  In-game captain
-                </label>
+                <div className="flex items-center gap-4">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-300">
+                    <input
+                      type="radio"
+                      name="captain"
+                      checked={captainIndex === i}
+                      onChange={() => setCaptainIndex(i)}
+                      className="h-4 w-4 accent-fuchsia-400"
+                    />
+                    In-game captain
+                  </label>
+                  {isBench && (
+                    <button
+                      type="button"
+                      onClick={() => removeBenchPlayer(i)}
+                      className="text-xs text-zinc-500 hover:text-rose-400"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -315,13 +336,23 @@ export default function RegisterPage() {
             </div>
           );
         })}
+
+        {players.length < MAX_PLAYERS && (
+          <button
+            type="button"
+            onClick={addBenchPlayer}
+            className="btn-ghost mt-4 w-full py-3"
+          >
+            + Add bench player ({players.length - MAIN_COUNT}/{MAX_BENCH} added)
+          </button>
+        )}
       </section>
 
       {/* ---------- Submit ---------- */}
       <div className="card mt-6 p-6 sm:p-8 text-center">
         <p className="text-sm text-zinc-400">
           Submitting registers your team as <span className="text-amber-300 font-semibold">Pending Payment</span>.
-          You'll get a registration code like <span className="code-chip">{tournament.codePrefix}-024</span> and full Whish payment instructions.
+          You'll get a registration code like <span className="code-chip">{tournament.codePrefix}-00866841953</span> (derived from your captain phone) and full Whish payment instructions.
         </p>
         <button onClick={submit} disabled={submitting} className="btn-primary mt-6 px-12 py-4 text-base">
           {submitting ? (

@@ -11,7 +11,7 @@ function csvCell(v: unknown): string {
 }
 
 /**
- * Exports one row per PLAYER with team columns repeated — opens cleanly in
+ * Exports one row per PLAYER with team columns repeated - opens cleanly in
  * Excel / Google Sheets and pivots easily. Import into Google Sheets via
  * File > Import, or set up an Apps Script to pull it on a schedule.
  */
@@ -30,7 +30,7 @@ export async function GET() {
     "registration_code", "team_name", "status", "captain_name", "captain_phone",
     "captain_email", "captain_discord", "preferred_contact", "registered_at",
     "player_full_name", "player_nickname", "player_role", "player_is_captain",
-    "player_phone", "player_steam64_id", "player_steam_profile", "player_faceit_username",
+    "player_phone", "player_steam_profile", "player_faceit_username",
     "player_faceit_profile", "player_discord", "admin_notes",
   ];
 
@@ -46,7 +46,7 @@ export async function GET() {
           t.captain_name, t.captain_phone, t.captain_email, t.captain_discord,
           t.preferred_contact, t.created_at,
           p.full_name, p.nickname, p.role, p.is_captain ? "yes" : "no",
-          p.phone, p.steam64_id, p.steam_profile_url, p.faceit_username,
+          p.phone, p.steam_profile_url, p.faceit_username,
           p.faceit_profile_url, p.discord_username, t.admin_notes,
         ]
           .map(csvCell)

@@ -7,11 +7,6 @@ const phone = z
   .max(20, "Phone number looks too long")
   .regex(/^\+?[0-9\s\-()]+$/, "Phone number can only contain digits, spaces, +, -, ()");
 
-const steam64 = z
-  .string()
-  .trim()
-  .regex(/^7656119\d{10}$/, "Steam64 ID must be 17 digits starting with 7656119");
-
 const url = z.string().trim().url("Must be a valid link (https://…)");
 
 export const playerSchema = z.object({
@@ -22,7 +17,6 @@ export const playerSchema = z.object({
     (v) => /steamcommunity\.com/i.test(v),
     "Must be a steamcommunity.com profile link",
   ),
-  steam64_id: steam64,
   faceit_username: z.string().trim().min(2, "Faceit username is required").max(40),
   faceit_profile_url: url.refine(
     (v) => /faceit\.com/i.test(v),
@@ -48,15 +42,18 @@ export const registrationSchema = z
     captain_discord: z.string().trim().min(2, "Captain Discord is required").max(40),
     preferred_contact: z.enum(["whatsapp", "phone", "discord", "email"]),
     notes: z.string().trim().max(1000).optional().or(z.literal("")),
-    players: z.array(playerSchema).length(6, "Exactly 6 players required (5 main + 1 bench)"),
+    players: z
+      .array(playerSchema)
+      .min(5, "At least 5 players required (main roster)")
+      .max(7, "At most 7 players allowed (5 main + up to 2 bench)"),
   })
   .superRefine((data, ctx) => {
     const mains = data.players.filter((p) => p.role === "main");
     const bench = data.players.filter((p) => p.role === "bench");
     if (mains.length !== 5)
       ctx.addIssue({ code: "custom", path: ["players"], message: "Exactly 5 main players required" });
-    if (bench.length !== 1)
-      ctx.addIssue({ code: "custom", path: ["players"], message: "Exactly 1 bench player required" });
+    if (bench.length > 2)
+      ctx.addIssue({ code: "custom", path: ["players"], message: "At most 2 bench players allowed" });
 
     const captains = data.players.filter((p) => p.is_captain);
     if (captains.length !== 1)
@@ -74,8 +71,6 @@ export const registrationSchema = z
       }
       return false;
     };
-    if (dupes(data.players.map((p) => p.steam64_id)))
-      ctx.addIssue({ code: "custom", path: ["players"], message: "Duplicate Steam64 IDs in your roster" });
     if (dupes(data.players.map((p) => p.faceit_username)))
       ctx.addIssue({ code: "custom", path: ["players"], message: "Duplicate Faceit usernames in your roster" });
     if (dupes(data.players.map((p) => p.nickname)))

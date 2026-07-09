@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 // Generate on demand rather than prerendering: avoids a @vercel/og
 // fileURLToPath("Invalid URL") crash during `next build` on Windows.
 export const dynamic = "force-dynamic";
-export const alt = `${tournament.name} — ${tournament.prizePool} CS2 tournament`;
+export const alt = `${tournament.name} - ${tournament.prizePool} CS2 tournament`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

@@ -11,7 +11,7 @@ const stats = [
 ];
 
 const flow = [
-  { title: "Register your team", desc: "Captain submits the full roster — 5 mains + 1 bench — with Steam and Faceit details." },
+  { title: "Register your team", desc: "Captain submits the full roster - 5 mains + up to 2 bench - with Steam and Faceit details." },
   { title: "Pay via Whish", desc: "Send the entry fee to our Whish number and include your registration code in the note." },
   { title: "Upload proof", desc: "Upload your payment screenshot. Our admins review every payment manually." },
   { title: "Get approved", desc: "Once approved, your team goes public and the captain receives the Faceit tournament link." },
@@ -28,13 +28,13 @@ export default function HomePage() {
             Official Tournament · A {tournament.organizer} × {tournament.partner} Collaboration
           </p>
 
-          {/* Co-branded lockup — Respawn × LERF */}
+          {/* Co-branded lockup - Respawn × LERF */}
           <div className="mx-auto mt-6 flex items-center justify-center gap-5 sm:gap-8 animate-rise">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.png"
+              src="/respawn-headshot.webp"
               alt="Respawn"
-              className="h-20 sm:h-32 w-auto animate-flicker drop-shadow-[0_0_30px_rgba(168,85,247,0.45)]"
+              className="h-20 sm:h-32 w-auto drop-shadow-[0_0_30px_rgba(168,85,247,0.45)]"
             />
             <span className="font-display text-3xl sm:text-5xl font-black text-muted/70 leading-none">×</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -144,7 +144,7 @@ export default function HomePage() {
               Slots are <span className="neon-magenta">limited</span>
             </h2>
             <p className="mx-auto mt-4 max-w-md text-zinc-400">
-              Only {tournament.maxTeams} teams make it in — and only approved teams hold a slot.
+              Only {tournament.maxTeams} teams make it in - and only approved teams hold a slot.
               Lock yours before the deadline.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">

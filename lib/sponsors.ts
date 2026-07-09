@@ -5,7 +5,7 @@ import type { Sponsor } from "./types";
  *
  * For now this is a static list so the page and footer render immediately.
  * Later, swap the body of `getSponsors()` to fetch from Supabase or an
- * external API — the route in app/api/sponsors already calls through here,
+ * external API - the route in app/api/sponsors already calls through here,
  * so nothing else has to change.
  */
 const SPONSORS: Sponsor[] = [

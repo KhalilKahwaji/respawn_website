@@ -39,7 +39,7 @@ export default function StatusPage() {
       if (!res.ok) setError(json.error ?? "Lookup failed.");
       else setTeam(json.team);
     } catch {
-      setError("Network error — try again.");
+      setError("Network error - try again.");
     } finally {
       setLoading(false);
     }
@@ -52,14 +52,14 @@ export default function StatusPage() {
         Track your <span className="neon-cyan">team</span>
       </h1>
       <p className="mt-3 text-zinc-400">
-        Enter your registration code (e.g. <span className="font-mono text-neon-magenta">RGL-CS2-024</span>) or the
+        Enter your registration code (e.g. <span className="font-mono text-neon-magenta">RGL-CS2-00866841953</span>) or the
         captain phone number you registered with.
       </p>
 
       <form onSubmit={lookup} className="card mt-8 flex flex-col sm:flex-row gap-3 p-5">
         <input
           className="input flex-1"
-          placeholder="RGL-CS2-024 or +961 70 123 456"
+          placeholder="RGL-CS2-00866841953 or +961 70 123 456"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Registration code or captain phone"

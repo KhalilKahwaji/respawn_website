@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
  * Gamified loading splash: glowing logo with glitch ghosts, a scan-line sweep,
  * a neon progress bar, and a "boot sequence" counter. Shows on full page loads,
  * animates to 100%, then fades out and unmounts. Persists across client-side
- * navigation? No — it lives in the layout and only mounts on a fresh load.
+ * navigation? No - it lives in the layout and only mounts on a fresh load.
  */
 
 const BOOT_LINES = [

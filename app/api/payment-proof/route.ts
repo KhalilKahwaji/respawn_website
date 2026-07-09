@@ -5,20 +5,18 @@ import { validateImage } from "@/lib/validation";
 export const runtime = "nodejs";
 
 /**
- * Captain uploads a Whish payment screenshot.
- * Requires registration code + captain phone to match, so nobody can
- * attach files to a team they don't own. The file goes into the PRIVATE
- * payment-proofs bucket — only admins can view it (via signed URLs).
+ * Captain uploads a Whish payment screenshot, identified by registration
+ * code alone. The file goes into the PRIVATE payment-proofs bucket - only
+ * admins can view it (via signed URLs).
  */
 export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
     const code = String(form.get("registration_code") ?? "").trim();
-    const phone = String(form.get("captain_phone") ?? "").trim();
     const file = form.get("proof");
 
-    if (!code || !phone) {
-      return NextResponse.json({ error: "Registration code and captain phone are required." }, { status: 400 });
+    if (!code) {
+      return NextResponse.json({ error: "Registration code is required." }, { status: 400 });
     }
     if (!(file instanceof File) || file.size === 0) {
       return NextResponse.json({ error: "Attach your payment screenshot." }, { status: 400 });
@@ -27,22 +25,17 @@ export async function POST(req: NextRequest) {
     if (imgErr) return NextResponse.json({ error: imgErr }, { status: 400 });
 
     const db = serviceClient();
-    const normalizedPhone = phone.replace(/[\s\-()]/g, "");
     const { data: team } = await db
       .from("teams")
-      .select("id, registration_code, captain_phone, status")
+      .select("id, registration_code, status")
       .ilike("registration_code", code)
       .maybeSingle();
 
-    const teamPhone = team?.captain_phone?.replace(/[\s\-()]/g, "");
-    if (!team || (teamPhone !== normalizedPhone && team.captain_phone !== phone)) {
-      return NextResponse.json(
-        { error: "Code and captain phone don't match any registration." },
-        { status: 404 },
-      );
+    if (!team) {
+      return NextResponse.json({ error: "No registration found for this code." }, { status: 404 });
     }
     if (team.status === "approved") {
-      return NextResponse.json({ error: "This team is already approved — no payment needed." }, { status: 409 });
+      return NextResponse.json({ error: "This team is already approved - no payment needed." }, { status: 409 });
     }
 
     const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";

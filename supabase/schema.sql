@@ -1,12 +1,9 @@
 -- =============================================================
--- Respawn Gaming Lounge — CS2 Tournament
+-- Respawn Gaming Lounge - CS2 Tournament
 -- Run this whole file in the Supabase SQL Editor (Database > SQL)
 -- =============================================================
 
 create extension if not exists "pgcrypto";
-
--- ---------- Registration code sequence (race-safe RGL-CS2-001, 002, …) ----------
-create sequence if not exists team_code_seq start 1;
 
 -- ---------- Teams ----------
 create table if not exists public.teams (
@@ -37,6 +34,15 @@ create table if not exists public.teams (
 -- Prevent duplicate team names (case-insensitive)
 create unique index if not exists teams_name_unique on public.teams (lower(team_name));
 
+-- A phone number can only captain one team (digits-only match, so spaces/
+-- dashes/country-code formatting differences don't sneak past this). This
+-- is belt-and-suspenders: registration_code is itself derived from the
+-- captain's phone (see lib/registration-code.ts), so it's already unique
+-- per phone in practice - this index guarantees it at the DB level too,
+-- in case a row is ever inserted some other way.
+create unique index if not exists teams_captain_phone_unique
+  on public.teams (regexp_replace(captain_phone, '\D', '', 'g'));
+
 -- ---------- Players ----------
 create table if not exists public.players (
   id uuid primary key default gen_random_uuid(),
@@ -45,7 +51,6 @@ create table if not exists public.players (
   nickname text not null,
   phone text not null,
   steam_profile_url text not null,
-  steam64_id text not null,
   faceit_username text not null,
   faceit_profile_url text not null,
   discord_username text not null,
@@ -54,8 +59,7 @@ create table if not exists public.players (
   created_at timestamptz not null default now()
 );
 
--- A Steam account / Faceit account can only enter the tournament once.
-create unique index if not exists players_steam64_unique on public.players (steam64_id);
+-- A Faceit account can only enter the tournament once.
 create unique index if not exists players_faceit_unique on public.players (lower(faceit_username));
 create index if not exists players_team_idx on public.players (team_id);
 
@@ -67,12 +71,6 @@ create table if not exists public.admins (
   role text not null default 'admin' check (role in ('admin','owner')),
   created_at timestamptz not null default now()
 );
-
--- ---------- Registration code generator (called via RPC, race-safe) ----------
-create or replace function public.next_registration_code(prefix text default 'RGL-CS2')
-returns text language sql security definer as $$
-  select prefix || '-' || lpad(nextval('team_code_seq')::text, 3, '0');
-$$;
 
 -- ---------- updated_at trigger ----------
 create or replace function public.touch_updated_at()
@@ -108,6 +106,23 @@ values
   ('team-logos', 'team-logos', true, 5242880, array['image/png','image/jpeg','image/webp']),
   ('payment-proofs', 'payment-proofs', false, 5242880, array['image/png','image/jpeg','image/webp'])
 on conflict (id) do nothing;
+
+-- =============================================================
+-- Migration: if you already ran this file before Steam64 ID was
+-- dropped from registration, run this once against your existing
+-- project to match the current schema.
+-- =============================================================
+-- alter table public.players drop column if exists steam64_id;
+
+-- =============================================================
+-- Migration: if you already ran this file before registration codes
+-- were derived from the captain's phone number (instead of a sequence),
+-- run this once against your existing project. Safe even if you have
+-- existing rows, AS LONG AS no two teams already share a captain phone
+-- (the new unique index will fail to create if they do).
+-- =============================================================
+-- drop function if exists public.next_registration_code(text);
+-- drop sequence if exists team_code_seq;
 
 -- No storage policies for anon: uploads happen server-side with the
 -- service role; payment proofs are served to admins via signed URLs only.

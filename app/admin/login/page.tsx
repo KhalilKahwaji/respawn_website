@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { browserClient } from "@/lib/supabase-browser";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,16 +14,20 @@ export default function AdminLoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const supa = browserClient();
-      const { error } = await supa.auth.signInWithPassword({ email, password });
-      if (error) {
-        setError("Invalid email or password.");
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        setError(json.error ?? "Login failed.");
         return;
       }
       router.push("/admin");
       router.refresh();
     } catch {
-      setError("Login failed — is Supabase configured?");
+      setError("Login failed - try again.");
     } finally {
       setLoading(false);
     }
@@ -39,18 +41,6 @@ export default function AdminLoginPage() {
       </h1>
       <form onSubmit={login} className="card mt-8 grid gap-5 p-8">
         <div>
-          <label className="field-label" htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            className="input"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
           <label className="field-label" htmlFor="password">Password</label>
           <input
             id="password"
@@ -60,6 +50,7 @@ export default function AdminLoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoFocus
           />
         </div>
         {error && <p className="error-text" role="alert">{error}</p>}
@@ -67,7 +58,7 @@ export default function AdminLoginPage() {
           {loading ? "Signing in…" : "Sign in"}
         </button>
         <p className="text-center text-xs text-zinc-600">
-          Accounts are created by the tournament owner in Supabase. There is no public sign-up.
+          Shared dashboard password - set via ADMIN_PASSWORD on the server.
         </p>
       </form>
     </div>

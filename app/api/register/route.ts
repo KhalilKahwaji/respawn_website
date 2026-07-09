@@ -3,6 +3,7 @@ import { serviceClient } from "@/lib/supabase-server";
 import { registrationSchema, validateImage } from "@/lib/validation";
 import { verifyFaceitPlayers } from "@/lib/faceit";
 import { tournament } from "@/lib/config";
+import { digitsOnly, encodePhoneDigits } from "@/lib/registration-code";
 
 export const runtime = "nodejs";
 
@@ -44,14 +45,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const steamIds = data.players.map((p) => p.steam64_id);
-    const { data: steamClash } = await db
-      .from("players")
-      .select("steam64_id")
-      .in("steam64_id", steamIds);
-    if (steamClash && steamClash.length > 0) {
+    // The registration code is deterministic from the captain's phone, so
+    // the same phone always produces the same code - this doubles as the
+    // "one phone can't captain two teams" check.
+    const phoneDigits = digitsOnly(data.captain_phone);
+    if (!phoneDigits) {
+      return NextResponse.json({ error: "Captain phone must contain digits." }, { status: 400 });
+    }
+    const code = `${tournament.codePrefix}-${encodePhoneDigits(phoneDigits)}`;
+
+    const { data: captainClash } = await db
+      .from("teams")
+      .select("id")
+      .eq("registration_code", code)
+      .maybeSingle();
+    if (captainClash) {
       return NextResponse.json(
-        { error: `Steam64 ID ${steamClash[0].steam64_id} is already registered with another team.` },
+        { error: "This phone number is already registered as a team captain." },
         { status: 409 },
       );
     }
@@ -68,19 +78,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ---- Optional Faceit verification (soft — never blocks) ----
+    // ---- Optional Faceit verification (soft - never blocks) ----
     const faceitChecks = await verifyFaceitPlayers(
-      data.players.map((p) => ({ faceit_username: p.faceit_username, steam64_id: p.steam64_id })),
+      data.players.map((p) => ({ faceit_username: p.faceit_username })),
     );
-
-    // ---- Generate the registration code (race-safe DB sequence) ----
-    const { data: code, error: codeErr } = await db.rpc("next_registration_code", {
-      prefix: tournament.codePrefix,
-    });
-    if (codeErr || !code) {
-      console.error(codeErr);
-      return NextResponse.json({ error: "Could not generate registration code. Try again." }, { status: 500 });
-    }
 
     // ---- Upload logo (if provided) ----
     let logoUrl: string | null = null;
@@ -118,7 +119,10 @@ export async function POST(req: NextRequest) {
 
     if (teamErr || !team) {
       console.error(teamErr);
-      return NextResponse.json({ error: "Could not save your team. Try again." }, { status: 500 });
+      const msg = teamErr?.code === "23505"
+        ? "This phone number is already registered as a team captain."
+        : "Could not save your team. Try again.";
+      return NextResponse.json({ error: msg }, { status: 409 });
     }
 
     // ---- Insert players (roll back the team if this fails) ----

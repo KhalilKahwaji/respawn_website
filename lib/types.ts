@@ -9,7 +9,6 @@ export interface Player {
   nickname: string;
   phone: string;
   steam_profile_url: string;
-  steam64_id: string;
   faceit_username: string;
   faceit_profile_url: string;
   discord_username: string;
@@ -41,7 +40,7 @@ export interface TeamWithPlayers extends Team {
   players: Player[];
 }
 
-/** Safe shape exposed on the public teams page — no contact info. */
+/** Safe shape exposed on the public teams page - no contact info. */
 export interface PublicTeam {
   team_name: string;
   team_logo_url: string | null;

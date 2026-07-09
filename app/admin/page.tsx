@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import StatusPill from "@/components/StatusPill";
-import { browserClient } from "@/lib/supabase-browser";
 import { STATUS_LABELS, type TeamStatus } from "@/lib/config";
 import type { TeamWithPlayers } from "@/lib/types";
 
@@ -51,7 +50,7 @@ export default function AdminDashboard() {
       setTeams(json.teams);
       setStats(json.stats);
     } catch {
-      setError("Failed to load teams — refresh to retry.");
+      setError("Failed to load teams - refresh to retry.");
     }
   }, []);
 
@@ -60,7 +59,7 @@ export default function AdminDashboard() {
   }, [load]);
 
   async function signOut() {
-    await browserClient().auth.signOut();
+    await fetch("/api/admin/logout", { method: "POST" });
     router.push("/admin/login");
     router.refresh();
   }
@@ -81,7 +80,7 @@ export default function AdminDashboard() {
       // refresh stats
       load();
     } catch {
-      alert("Update failed — try again.");
+      alert("Update failed - try again.");
     } finally {
       setBusyId(null);
     }
@@ -116,8 +115,7 @@ export default function AdminDashboard() {
         t.players?.some(
           (p) =>
             p.nickname.toLowerCase().includes(q) ||
-            p.faceit_username.toLowerCase().includes(q) ||
-            p.steam64_id.includes(q),
+            p.faceit_username.toLowerCase().includes(q),
         )
       );
     });
@@ -127,12 +125,11 @@ export default function AdminDashboard() {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
         <div className="card p-8">
-          <h1 className="font-display text-2xl font-bold uppercase text-rose-300">Not an admin</h1>
+          <h1 className="font-display text-2xl font-bold uppercase text-rose-300">Session expired</h1>
           <p className="mt-3 text-sm text-zinc-400">
-            You're signed in, but this email isn't in the <span className="font-mono">admins</span> table.
-            Ask the tournament owner to add it.
+            Your admin session isn't valid anymore. Sign in again with the dashboard password.
           </p>
-          <button onClick={signOut} className="btn-ghost mt-6">Sign out</button>
+          <button onClick={signOut} className="btn-ghost mt-6">Back to login</button>
         </div>
       </div>
     );
@@ -181,7 +178,7 @@ export default function AdminDashboard() {
       <div className="card mt-6 flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
         <input
           className="input lg:max-w-sm"
-          placeholder="Search team, code, captain, player, Steam ID…"
+          placeholder="Search team, code, captain, player…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search teams"
@@ -291,7 +288,7 @@ export default function AdminDashboard() {
                         <dl className="space-y-1.5 text-zinc-300">
                           <div><dt className="inline text-muted">Name: </dt><dd className="inline">{t.captain_name}</dd></div>
                           <div><dt className="inline text-muted">Phone: </dt><dd className="inline font-mono">{t.captain_phone}</dd></div>
-                          <div><dt className="inline text-muted">Email: </dt><dd className="inline">{t.captain_email ?? "—"}</dd></div>
+                          <div><dt className="inline text-muted">Email: </dt><dd className="inline">{t.captain_email ?? "-"}</dd></div>
                           <div><dt className="inline text-muted">Discord: </dt><dd className="inline">{t.captain_discord}</dd></div>
                           <div><dt className="inline text-muted">Prefers: </dt><dd className="inline capitalize">{t.preferred_contact}</dd></div>
                           <div><dt className="inline text-muted">Registered: </dt><dd className="inline">{new Date(t.created_at).toLocaleString()}</dd></div>
@@ -323,7 +320,7 @@ export default function AdminDashboard() {
                           {[...(t.players ?? [])]
                             .sort((a, b) => (a.role === b.role ? 0 : a.role === "main" ? -1 : 1))
                             .map((p) => (
-                              <li key={p.steam64_id} className="rounded-lg border border-edge/70 p-2.5">
+                              <li key={p.id ?? p.nickname} className="rounded-lg border border-edge/70 p-2.5">
                                 <p className="font-semibold text-zinc-200">
                                   {p.nickname}
                                   {p.is_captain && <span className="ml-1 text-neon-magenta">★ CPT</span>}
@@ -332,7 +329,6 @@ export default function AdminDashboard() {
                                   </span>
                                 </p>
                                 <p className="text-xs text-muted">{p.full_name} · {p.phone}</p>
-                                <p className="text-xs text-muted font-mono">{p.steam64_id}</p>
                                 <p className="text-xs">
                                   <a className="text-sky-400 hover:underline" href={p.faceit_profile_url} target="_blank" rel="noreferrer">
                                     faceit: {p.faceit_username}

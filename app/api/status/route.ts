@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 
 /**
  * Captain status lookup by registration code OR captain phone number.
- * Returns only what the captain needs — never other teams' data, never
+ * Returns only what the captain needs - never other teams' data, never
  * the payment screenshot. Faceit link is included only once approved.
  */
 export async function POST(req: NextRequest) {

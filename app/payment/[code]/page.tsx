@@ -11,7 +11,6 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
   const search = useSearchParams();
   const isNew = search.get("new") === "1";
 
-  const [phone, setPhone] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,20 +29,18 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
 
   async function submitProof() {
     setError(null);
-    if (!phone.trim()) return setError("Enter the captain phone number you registered with.");
     if (!file) return setError("Attach your Whish payment screenshot.");
     setSubmitting(true);
     try {
       const fd = new FormData();
       fd.append("registration_code", code);
-      fd.append("captain_phone", phone);
       fd.append("proof", file);
       const res = await fetch("/api/payment-proof", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok) return setError(json.error ?? "Upload failed. Try again.");
       setDone(true);
     } catch {
-      setError("Network error — check your connection and try again.");
+      setError("Network error - check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
@@ -68,7 +65,7 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
           <h1 className="mt-6 font-display text-2xl font-black uppercase">Proof received</h1>
           <p className="mt-3 text-zinc-400">
             Your payment is now <span className="text-sky-300 font-semibold">Under Review</span>. An admin will
-            verify it manually — track your team anytime with code{" "}
+            verify it manually - track your team anytime with code{" "}
             <span className="code-chip">{code}</span>.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
@@ -90,7 +87,7 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
           <p className="mt-2 text-zinc-300">
             Your team has been registered and is <span className="text-amber-300 font-semibold">pending payment</span>.
           </p>
-          <p className="mt-3 text-sm text-zinc-400">Save your registration code — you'll need it to check status and upload proof:</p>
+          <p className="mt-3 text-sm text-zinc-400">Save your registration code - you'll need it to check status and upload proof:</p>
           <div className="mt-3 flex items-center justify-center gap-3">
             <span className="code-chip text-lg px-5 py-2.5">{code}</span>
             <button onClick={copyCode} className="btn-ghost btn-sm">{copied ? "Copied!" : "Copy"}</button>
@@ -133,16 +130,6 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
       <div className="card mt-6 p-6 sm:p-8">
         <h3 className="font-display text-lg font-bold uppercase">Upload payment proof</h3>
         <div className="mt-5 grid gap-5">
-          <div>
-            <label className="field-label" htmlFor="phone">Captain phone (must match your registration)</label>
-            <input
-              id="phone"
-              className="input"
-              placeholder="+961 70 123 456"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
           <div>
             <label className="field-label">Payment screenshot (PNG / JPG / WEBP, max 5 MB)</label>
             <input

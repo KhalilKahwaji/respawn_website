@@ -12,7 +12,7 @@ interface PublicTeamRow {
 async function getApprovedTeams(): Promise<PublicTeamRow[] | null> {
   try {
     const db = serviceClient();
-    // Only approved teams, only public-safe columns — no phones, no emails.
+    // Only approved teams, only public-safe columns - no phones, no emails.
     const { data, error } = await db
       .from("teams")
       .select("team_name, team_logo_url, players(nickname, role, is_captain)")
@@ -35,7 +35,7 @@ export default async function TeamsPage() {
         Approved <span className="neon-magenta">teams</span>
       </h1>
       <p className="mt-3 max-w-2xl text-zinc-400">
-        Every team below has registered and had its payment verified by an admin. Player nicknames only —
+        Every team below has registered and had its payment verified by an admin. Player nicknames only -
         contact details stay private.
       </p>
 

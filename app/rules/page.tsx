@@ -1,9 +1,9 @@
 import { tournament } from "@/lib/config";
 
-export const metadata = { title: `Rules — ${tournament.name}` };
+export const metadata = { title: `Rules - ${tournament.name}` };
 
 /**
- * Edit the rules here — each section is plain data, so updating copy
+ * Edit the rules here - each section is plain data, so updating copy
  * never touches layout code.
  */
 const sections: { id: string; title: string; rules: string[] }[] = [
@@ -30,8 +30,8 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     id: "team-size",
     title: "Team size & substitutes",
     rules: [
-      "Rosters are exactly 5 main players + 1 bench (substitute) player.",
-      "The bench player may swap in between maps, or mid-match only with admin approval (e.g. disconnect emergencies).",
+      "Rosters are exactly 5 main players, plus up to 2 optional bench (substitute) players.",
+      "Bench players may swap in between maps, or mid-match only with admin approval (e.g. disconnect emergencies).",
       "Roster changes after registration require admin approval and are locked once the bracket is published.",
       "Stand-ins not on the registered roster are not allowed.",
     ],
@@ -41,8 +41,8 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     title: "Faceit & Steam account requirements",
     rules: [
       "Every player needs an active Faceit account with CS2 enabled, matching the username submitted at registration.",
-      "Steam64 IDs submitted at registration must match the accounts used in matches.",
-      "Accounts must be the player's own primary account — smurfing or account sharing is a disqualifiable offense.",
+      "The Steam account submitted at registration must match the account used in matches.",
+      "Accounts must be the player's own primary account - smurfing or account sharing is a disqualifiable offense.",
       "All players must join the Faceit championship lobby before check-in closes.",
     ],
   },
@@ -60,7 +60,7 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     rules: [
       "Teams have 10 minutes from the official match start to be fully connected, after a 10-minute grace period the match is forfeited 0-1.",
       "Repeated delays across the event can result in removal without refund.",
-      "If a server/platform issue is at fault, admins will pause or reschedule — admin word is final on what counts as a technical issue.",
+      "If a server/platform issue is at fault, admins will pause or reschedule - admin word is final on what counts as a technical issue.",
     ],
   },
   {
@@ -85,9 +85,9 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     id: "behavior",
     title: "Toxicity & behavior",
     rules: [
-      "Hate speech, harassment, threats, or discriminatory language — in-game, in chat, or on Discord — leads to warnings, round penalties, or disqualification at admin discretion.",
+      "Hate speech, harassment, threats, or discriminatory language - in-game, in chat, or on Discord - leads to warnings, round penalties, or disqualification at admin discretion.",
       "Intentional throwing, match-fixing, or betting on your own matches is an instant ban from all Respawn events.",
-      "Captains are responsible for their team's conduct, including the bench player and any supporters they bring.",
+      "Captains are responsible for their team's conduct, including bench players and any supporters they bring.",
     ],
   },
   {

@@ -3,7 +3,7 @@ import { getSponsors } from "@/lib/sponsors";
 import type { Sponsor } from "@/lib/types";
 
 /**
- * Sponsor logo strip shown in the footer. Server component — reads the same
+ * Sponsor logo strip shown in the footer. Server component - reads the same
  * sponsor source as the /sponsors page and the API. Renders nothing if there
  * are no sponsors yet.
  */
