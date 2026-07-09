@@ -14,7 +14,7 @@ const flow = [
   { title: "Register your team", desc: "Captain submits the full roster - 5 mains + up to 2 bench - with Steam and Faceit details." },
   { title: "Pay via Whish", desc: "Send the entry fee to our Whish number and include your registration code in the note." },
   { title: "Upload proof", desc: "Upload your payment screenshot. Our admins review every payment manually." },
-  { title: "Get approved", desc: "Once approved, your team goes public and the captain receives the Faceit tournament link." },
+  { title: "Get approved", desc: "Once approved, your team goes public and the captain is notified with next steps." },
 ];
 
 export default function HomePage() {

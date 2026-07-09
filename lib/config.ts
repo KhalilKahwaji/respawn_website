@@ -9,18 +9,20 @@ export const REGISTRATION_CLOSES_DAYS_BEFORE = 7;
 // ISO date string used by the countdown timer (placeholder).
 const startDate = "2026-08-10T18:00:00+03:00";
 
+// Registration closes exactly this many ms before kickoff - the raw cutoff
+// used to gate new registrations, in addition to the human-readable label.
+const registrationDeadlineMs = new Date(startDate).getTime() - REGISTRATION_CLOSES_DAYS_BEFORE * 86_400_000;
+
 /**
- * Derive the registration deadline label from the start date so it is always
- * exactly REGISTRATION_CLOSES_DAYS_BEFORE days before kickoff, in the
- * tournament's local timezone. Formatted manually (no locale/TZ lookup) so the
- * server and client render identical strings - no hydration mismatch.
+ * Format the registration deadline in the tournament's local timezone.
+ * Formatted manually (no locale/TZ lookup) so the server and client render
+ * identical strings - no hydration mismatch.
  */
-function deriveRegistrationDeadlineLabel(startIso: string, daysBefore: number) {
+function formatDeadlineLabel(ms: number, startIso: string) {
   const offset = startIso.match(/([+-])(\d{2}):?(\d{2})$/);
   const offsetMin = offset
     ? (offset[1] === "-" ? -1 : 1) * (Number(offset[2]) * 60 + Number(offset[3]))
     : 0;
-  const ms = new Date(startIso).getTime() - daysBefore * 86_400_000;
   const local = new Date(ms + offsetMin * 60_000); // shift so UTC getters read local time
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -42,17 +44,21 @@ export const tournament = {
   startDate,
   startDateLabel: "August 10, 2026 - 6:00 PM",
   registrationClosesDaysBefore: REGISTRATION_CLOSES_DAYS_BEFORE,
-  registrationDeadlineLabel: deriveRegistrationDeadlineLabel(startDate, REGISTRATION_CLOSES_DAYS_BEFORE),
+  // Raw cutoff instant - compare against Date.now() to gate registration.
+  registrationDeadline: new Date(registrationDeadlineMs),
+  registrationDeadlineLabel: formatDeadlineLabel(registrationDeadlineMs, startDate),
   prizePool: "$4,000",
   entryFee: "$125 / team",
   format: "5v5 - Double Elimination",
-  maxTeams: 32,
+  maxTeams: 16,
   // Whish payment details
   whishNumber: "+961 81 632 209",
   whishAccountName: "Respawn Gaming Lounge",
-  // Faceit tournament link - only revealed to approved teams
-  faceitTournamentUrl: "https://www.faceit.com/en/championship/REPLACE_ME",
-  discordServerUrl: "https://discord.gg/REPLACE_ME",
+  // Faceit tournament link - only revealed to approved teams. Null hides
+  // the "join tournament" link/button entirely until the championship
+  // actually exists on Faceit - set the real URL here to bring it back.
+  faceitTournamentUrl: null as string | null,
+  discordServerUrl: "https://discord.gg/Wh6TSJW3JY",
   contactPhone: "+961 81 632 209",
   location: "Respawn Gaming Lounge / Online via Faceit",
   codePrefix: "RGL-CS2",

@@ -25,12 +25,29 @@ export async function POST(req: NextRequest) {
     }
     const data = parsed.data;
 
+    if (Date.now() > tournament.registrationDeadline.getTime()) {
+      return NextResponse.json({ error: "Registration is closed - the deadline has passed." }, { status: 403 });
+    }
+
     const logo = form.get("logo");
     const logoFile = logo instanceof File && logo.size > 0 ? logo : null;
     const imgErr = validateImage(logoFile, "Team logo");
     if (imgErr) return NextResponse.json({ error: imgErr }, { status: 400 });
 
     const db = serviceClient();
+
+    // ---- Capacity check: rejected teams give their slot back ----
+    const { count: takenSlots, error: countErr } = await db
+      .from("teams")
+      .select("id", { count: "exact", head: true })
+      .neq("status", "rejected");
+    if (countErr) {
+      console.error(countErr);
+      return NextResponse.json({ error: "Could not check slot availability. Try again." }, { status: 500 });
+    }
+    if ((takenSlots ?? 0) >= tournament.maxTeams) {
+      return NextResponse.json({ error: "Registration is closed - all team slots are filled." }, { status: 403 });
+    }
 
     // ---- Duplicate checks against existing registrations ----
     const { data: nameClash } = await db
