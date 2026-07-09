@@ -1,4 +1,4 @@
-# RESPAWN CS2 Showdown - Tournament Website
+# RESPAWN Heatwave 2026 - Tournament Website
 
 A full tournament platform for **Respawn Gaming Lounge**'s CS2 event: team registration, Whish payment proof flow, manual admin approval, public approved-teams page, rules page, and a protected admin dashboard. Built with **Next.js 14 (App Router) + Supabase** (Postgres, Auth, Storage).
 

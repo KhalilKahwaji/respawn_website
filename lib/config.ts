@@ -36,8 +36,8 @@ function formatDeadlineLabel(ms: number, startIso: string) {
 }
 
 export const tournament = {
-  name: "RESPAWN CS2 SHOWDOWN",
-  shortName: "CS2 Showdown",
+  name: "RESPAWN HEATWAVE 2026",
+  shortName: "Heatwave 2026",
   organizer: "Respawn Gaming Lounge",
   // Collaboration partner - co-hosting the tournament with Respawn.
   partner: "LERF",

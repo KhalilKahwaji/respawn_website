@@ -46,10 +46,8 @@ export default function HomePage() {
           </div>
 
           <h1 className="mt-4 font-display font-black uppercase leading-none tracking-tight">
-            <span className="block text-4xl sm:text-7xl">
-              <span className="neon-cyan">CS2</span>{" "}
-              <span className="neon-magenta">Showdown</span>
-            </span>
+            <span className="heatwave-text block text-4xl sm:text-7xl">Heatwave 2026</span>
+            <span className="mt-2 block text-lg sm:text-3xl tracking-[0.3em] text-zinc-300">Tournament</span>
           </h1>
 
           <p className="mx-auto mt-5 max-w-xl text-base sm:text-lg text-zinc-400">

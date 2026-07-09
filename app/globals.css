@@ -412,6 +412,24 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* ---------- Heatwave hero title ---------- */
+.heatwave-text {
+  background: linear-gradient(100deg, #fde047, #fb923c, #f43f5e, #fb923c, #fde047);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: heatwaveShift 5s ease-in-out infinite, heatwavePulse 2.4s ease-in-out infinite;
+}
+@keyframes heatwaveShift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+@keyframes heatwavePulse {
+  0%, 100% { filter: drop-shadow(0 0 18px rgba(251, 146, 60, 0.45)) drop-shadow(0 0 40px rgba(244, 63, 94, 0.25)); }
+  50%      { filter: drop-shadow(0 0 30px rgba(251, 146, 60, 0.7)) drop-shadow(0 0 65px rgba(244, 63, 94, 0.4)); }
+}
+
 /* ---------- Misc ---------- */
 .section-eyebrow {
   @apply font-mono text-xs uppercase tracking-[0.3em] text-neon-cyan;
