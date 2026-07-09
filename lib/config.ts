@@ -7,7 +7,7 @@
 export const REGISTRATION_CLOSES_DAYS_BEFORE = 7;
 
 // ISO date string used by the countdown timer (placeholder).
-const startDate = "2026-08-10T18:00:00+03:00";
+const startDate = "2026-08-08T18:00:00+03:00";
 
 // Registration closes exactly this many ms before kickoff - the raw cutoff
 // used to gate new registrations, in addition to the human-readable label.
@@ -42,7 +42,7 @@ export const tournament = {
   // Collaboration partner - co-hosting the tournament with Respawn.
   partner: "LERF",
   startDate,
-  startDateLabel: "August 10, 2026 - 6:00 PM",
+  startDateLabel: "August 8, 2026 - 6:00 PM",
   registrationClosesDaysBefore: REGISTRATION_CLOSES_DAYS_BEFORE,
   // Raw cutoff instant - compare against Date.now() to gate registration.
   registrationDeadline: new Date(registrationDeadlineMs),
