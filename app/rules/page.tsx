@@ -21,7 +21,7 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     id: "game-rules",
     title: "Game-specific rules",
     rules: [
-      "Map pool: Ancient, Overpass, Nuke, Mirage, Inferno, Cache, Dust II.",
+      "Map pool: Ancient, Nuke, Mirage, Inferno, Cache, Dust II.",
       "Which veto process applies depends on that round's match format: upper bracket (BO1), lower bracket (BO3), or the Grand Final (BO5). Team A/Team B assignment for veto purposes follows Faceit seeding for that match.",
       "BO1 veto: Team A bans a map, Team B bans a map, Team A bans a map, Team B bans a map, Team A bans a map, Team B bans a map. The remaining map is played - a knife round decides starting side.",
       "BO3 veto: Team A bans a map, Team B bans a map, Team A picks a map (Team B picks starting side), Team B picks a map (Team A picks starting side), Team A bans a map, Team B bans a map. The remaining map is played - a knife round decides starting side.",
