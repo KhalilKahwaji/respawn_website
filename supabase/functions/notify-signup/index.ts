@@ -84,6 +84,9 @@ Deno.serve(async (req: Request) => {
     // account owner). Set NOTIFY_FROM_EMAIL to an address on a verified domain
     // to reach everyone.
     const fromEmail = Deno.env.get("NOTIFY_FROM_EMAIL") ?? "onboarding@resend.dev";
+    // Admin dashboard link shown in the email. Override with ADMIN_URL if the
+    // domain ever changes.
+    const adminUrl = Deno.env.get("ADMIN_URL") ?? "https://www.respawnlb.com/admin";
 
     if (!resendKey || recipients.length === 0) {
       console.error("Missing RESEND_API_KEY or NOTIFY_EMAILS secret");
@@ -112,7 +115,8 @@ Deno.serve(async (req: Request) => {
       `Email: ${captainEmail}\n` +
       `Phone: ${captainPhone}\n` +
       `Preferred contact: ${preferredContact}\n` +
-      `Registered: ${registeredAt}\n`;
+      `Registered: ${registeredAt}\n\n` +
+      `View all teams: ${adminUrl}\n`;
 
     // A row helper. `mono` renders the value in a highlighted monospace style
     // (used for the registration code).
@@ -143,6 +147,9 @@ Deno.serve(async (req: Request) => {
               ${row("Preferred contact", preferredContact)}
               ${row("Registered", registeredAt)}
             </table>
+            <div style="margin-top:24px;">
+              <a href="${esc(adminUrl)}" style="display:inline-block;background-color:#2de2e6;color:#0b0b12;text-decoration:none;font-weight:bold;font-size:14px;padding:13px 26px;border-radius:8px;">View all teams &rarr;</a>
+            </div>
           </td>
         </tr>
         <tr>
