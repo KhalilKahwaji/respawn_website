@@ -1,0 +1,27 @@
+name: Supabase keepalive
+
+# Free-tier Supabase projects auto-pause after 7 days with no activity.
+# This pings the `keepalive` Edge Function every 2 days so that never
+# happens. `*/2` on day-of-month is a standard cron approximation for
+# "every 2 days" - it can occasionally be a 1-3 day gap around month
+# boundaries, which is still comfortably inside the 7-day pause window.
+#
+# NOTE: GitHub disables scheduled workflows automatically after 60 days
+# with no commits/pushes to the repo (not workflow runs - repo activity).
+# If this repo goes quiet for that long, re-enable it under the repo's
+# Actions tab, or just push any commit to reset the clock.
+on:
+  schedule:
+    - cron: "0 0 */2 * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping keepalive Edge Function
+        run: |
+          curl --fail --silent --show-error --retry 2 --retry-delay 5 \
+            -X POST "${{ secrets.SUPABASE_KEEPALIVE_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json"

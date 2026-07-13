@@ -1,0 +1,59 @@
+name: Supabase pause check
+
+# Runs entirely on GitHub's infra and only talks to Supabase's REST
+# endpoint + Resend's API directly - deliberately NOT routed through a
+# Supabase Edge Function. If the project is actually paused, its Edge
+# Functions are unreachable too, so a function can't reliably report on
+# its own project being down. Doing the check + email here means the
+# alert still fires even when Supabase itself is completely unreachable.
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Supabase REST endpoint
+        id: check
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          # Probe an actual table, not the /rest/v1/ root: on this project the
+          # root 401s even when healthy, but a table SELECT returns 200 (RLS
+          # just yields []). A paused/unreachable project returns non-2xx or
+          # 000 (connection failure). `|| true` keeps set -e from aborting AND
+          # guarantees status is a single clean 3-char code (curl's -w prints
+          # 000 on connection failure), so $GITHUB_OUTPUT never gets a newline.
+          status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 --retry 1 \
+            "$SUPABASE_URL/rest/v1/keepalive?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" || true)
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "Supabase REST endpoint responded with HTTP $status"
+
+      - name: Alert by email if unreachable
+        if: ${{ !startsWith(steps.check.outputs.status, '2') }}
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+          # Comma-separated list, e.g. "a@x.com,b@y.com"
+          ALERT_EMAILS: ${{ secrets.ALERT_EMAILS }}
+          STATUS: ${{ steps.check.outputs.status }}
+        run: |
+          # Turn the comma-separated list into a JSON array (trimming spaces),
+          # then build the whole payload with jq so escaping is always correct.
+          # POSIX [[:space:]] instead of \s: jq's string parser rejects \s as
+          # an invalid escape before it ever reaches the regex engine.
+          to_json=$(printf '%s' "$ALERT_EMAILS" | jq -R -c 'split(",") | map(gsub("^[[:space:]]+|[[:space:]]+$";"")) | map(select(length > 0))')
+          payload=$(jq -n \
+            --arg from "$RESEND_FROM_EMAIL" \
+            --argjson to "$to_json" \
+            --arg subject "Supabase project may be paused or unreachable" \
+            --arg text "Daily health check got HTTP $STATUS from the Supabase REST endpoint. The project may be paused - check the Supabase dashboard." \
+            '{from: $from, to: $to, subject: $subject, text: $text}')
+          curl --fail --silent --show-error -X POST "https://api.resend.com/emails" \
+            -H "Authorization: Bearer $RESEND_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$payload"

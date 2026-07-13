@@ -98,6 +98,16 @@ Admin dashboard → **Export CSV**. The file is UTF-8 with BOM (opens cleanly in
 Current: optional username validation + level/ELO fetch at registration time (`lib/faceit.ts`).
 The module is isolated so you can later add: championship subscription via the Faceit API, bracket/results display, automatic roster checks. Hooks and endpoint notes are documented inside `lib/faceit.ts`.
 
+## Ops: keeping Supabase alive + alerts
+
+Three independent pieces, all driven from GitHub Actions:
+
+- **Keepalive** (`supabase/functions/keepalive`): upserts one row in `public.keepalive` every ~2 days so the free-tier project never hits the 7-day auto-pause. Triggered by `.github/workflows/keepalive.yml`.
+- **Pause check** (`.github/workflows/pause-check.yml`): a daily health check against Supabase's REST endpoint, done directly from the GitHub Actions runner - deliberately *not* a Supabase Edge Function, since a paused project takes its own Edge Functions down too, so a function can't reliably report on its own outage. Emails an alert via Resend on failure.
+- **New-registration notifications** (`supabase/functions/notify-signup`): a Supabase Database Webhook on `INSERT` into `public.teams` calls this function, which emails the admin list via Resend with the team name, registration code, and captain contact info.
+
+See the setup checklist (secrets to add, CLI deploy commands, webhook config) wherever this was originally set up - it's not duplicated here since it's a one-time setup, not routine editing.
+
 ## Project structure
 
 ```
@@ -113,5 +123,7 @@ app/
 components/              # Navbar, StatusPill, Countdown
 lib/                     # config, types, zod validation, supabase clients, faceit
 supabase/schema.sql      # Complete database + storage setup
+supabase/functions/      # keepalive, notify-signup Edge Functions
+.github/workflows/       # keepalive + pause-check cron jobs
 middleware.ts            # /admin route protection
 ```

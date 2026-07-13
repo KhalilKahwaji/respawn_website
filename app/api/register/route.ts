@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { serviceClient } from "@/lib/supabase-server";
+import { serviceClient, isConnectivityError } from "@/lib/supabase-server";
 import { registrationSchema, validateImage } from "@/lib/validation";
 import { verifyFaceitPlayers } from "@/lib/faceit";
 import { tournament } from "@/lib/config";
 import { digitsOnly, encodePhoneDigits } from "@/lib/registration-code";
 
 export const runtime = "nodejs";
+
+const CONTACT_ADMINS_MESSAGE =
+  `Registration is temporarily unavailable due to a backend issue on our end - it's not something wrong with your ` +
+  `submission. Please contact the ${tournament.organizer} admins on Discord (${tournament.discordServerUrl}) or at ` +
+  `${tournament.contactPhone} so we can register your team manually, and try again later.`;
+
+/** Turns a Supabase connectivity failure into the admin-contact message; returns null for ordinary query errors. */
+function connectivityResponse(err: unknown) {
+  if (!isConnectivityError(err)) return null;
+  return NextResponse.json({ error: CONTACT_ADMINS_MESSAGE }, { status: 503 });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,7 +54,8 @@ export async function POST(req: NextRequest) {
       .neq("status", "rejected");
     if (countErr) {
       console.error(countErr);
-      return NextResponse.json({ error: "Could not check slot availability. Try again." }, { status: 500 });
+      return connectivityResponse(countErr) ??
+        NextResponse.json({ error: "Could not check slot availability. Try again." }, { status: 500 });
     }
     if ((takenSlots ?? 0) >= tournament.maxTeams) {
       return NextResponse.json({ error: "Registration is closed - all team slots are filled." }, { status: 403 });
@@ -110,7 +122,8 @@ export async function POST(req: NextRequest) {
         .upload(path, logoFile, { contentType: logoFile.type, upsert: true });
       if (upErr) {
         console.error(upErr);
-        return NextResponse.json({ error: "Logo upload failed. Try a smaller image." }, { status: 500 });
+        return connectivityResponse(upErr) ??
+          NextResponse.json({ error: "Logo upload failed. Try a smaller image." }, { status: 500 });
       }
       logoUrl = db.storage.from("team-logos").getPublicUrl(path).data.publicUrl;
     }
@@ -136,10 +149,14 @@ export async function POST(req: NextRequest) {
 
     if (teamErr || !team) {
       console.error(teamErr);
-      const msg = teamErr?.code === "23505"
-        ? "This phone number is already registered as a team captain."
-        : "Could not save your team. Try again.";
-      return NextResponse.json({ error: msg }, { status: 409 });
+      if (teamErr?.code === "23505") {
+        return NextResponse.json(
+          { error: "This phone number is already registered as a team captain." },
+          { status: 409 },
+        );
+      }
+      return connectivityResponse(teamErr) ??
+        NextResponse.json({ error: "Could not save your team. Try again." }, { status: 500 });
     }
 
     // ---- Insert players (roll back the team if this fails) ----
@@ -149,15 +166,20 @@ export async function POST(req: NextRequest) {
     if (playersErr) {
       console.error(playersErr);
       await db.from("teams").delete().eq("id", team.id);
-      const msg = playersErr.code === "23505"
-        ? "One of your players is already registered with another team."
-        : "Could not save players. Try again.";
-      return NextResponse.json({ error: msg }, { status: 409 });
+      if (playersErr.code === "23505") {
+        return NextResponse.json(
+          { error: "One of your players is already registered with another team." },
+          { status: 409 },
+        );
+      }
+      return connectivityResponse(playersErr) ??
+        NextResponse.json({ error: "Could not save players. Try again." }, { status: 409 });
     }
 
     return NextResponse.json({ registration_code: team.registration_code });
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: "Unexpected server error." }, { status: 500 });
+    return connectivityResponse(e) ??
+      NextResponse.json({ error: "Unexpected server error." }, { status: 500 });
   }
 }

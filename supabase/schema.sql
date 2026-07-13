@@ -72,6 +72,20 @@ create table if not exists public.admins (
   created_at timestamptz not null default now()
 );
 
+-- ---------- Keepalive ----------
+-- Single-row table (id is always 1) that the `keepalive` Edge Function
+-- upserts on a schedule, purely so Supabase sees write activity and never
+-- auto-pauses this free-tier project after 7 days of inactivity.
+create table if not exists public.keepalive (
+  id integer primary key default 1 check (id = 1),
+  last_ping timestamptz not null default now()
+);
+insert into public.keepalive (id, last_ping) values (1, now())
+  on conflict (id) do nothing;
+
+alter table public.keepalive enable row level security;
+-- No policies: only the keepalive Edge Function (service-role key) writes here.
+
 -- ---------- updated_at trigger ----------
 create or replace function public.touch_updated_at()
 returns trigger language plpgsql as $$

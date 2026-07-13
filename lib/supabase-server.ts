@@ -34,6 +34,24 @@ export function serviceClient(): SupabaseClient {
 }
 
 /**
+ * True when an error looks like "couldn't reach Supabase at all" (DNS
+ * failure, connection refused/timeout, or a paused project) rather than a
+ * normal query error (bad input, constraint violation, etc.). Callers use
+ * this to show a "backend is down, contact an admin" message instead of a
+ * generic/misleading one.
+ */
+export function isConnectivityError(err: unknown): boolean {
+  if (!err) return false;
+  const message =
+    err instanceof Error
+      ? err.message
+      : typeof err === "object" && err !== null && "message" in err
+        ? String((err as { message: unknown }).message)
+        : String(err);
+  return /fetch failed|ENOTFOUND|ECONNREFUSED|ETIMEDOUT|EAI_AGAIN|network|paused/i.test(message);
+}
+
+/**
  * Verifies the request carries a valid signed admin session cookie (set by
  * /api/admin/login after checking the shared ADMIN_PASSWORD). Returns a
  * label for the caller or null if unauthenticated.
