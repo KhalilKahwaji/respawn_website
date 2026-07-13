@@ -4,6 +4,7 @@ import { tournament } from "@/lib/config";
 import Navbar from "@/components/Navbar";
 import FooterSponsors from "@/components/FooterSponsors";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 
 const siteUrl = "https://www.respawnlb.com";
 const ogDescription = `${tournament.organizer} × ${tournament.partner} present a 5v5 CS2 showdown for a ${tournament.prizePool} prize pool. Lock your team's slot - registration closes ${tournament.registrationClosesDaysBefore} days before kickoff.`;
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </nav>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
