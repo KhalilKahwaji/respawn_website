@@ -25,6 +25,14 @@ const SPONSORS: Sponsor[] = [
     blurb: "Where IT needs meet solutions",
     tier: "sponsor",
   },
+  {
+    id: "naked-eye-films",
+    name: "Naked Eye Films",
+    logo_url: "/naked_eye_films_logo.webp",
+    website_url: "https://nakedeyefilms.co/",
+    blurb: "Video production & creative content",
+    tier: "sponsor",
+  },
 ];
 
 export async function getSponsors(): Promise<Sponsor[]> {
