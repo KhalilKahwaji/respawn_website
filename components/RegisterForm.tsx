@@ -214,7 +214,7 @@ export default function RegisterForm() {
             [
               ["captain_name", "Captain full name *", "Ali Hassan"],
               ["captain_phone", "Captain phone (Whish) *", "+961 70 123 456"],
-              ["captain_email", "Captain email (optional)", "captain@email.com"],
+              ["captain_email", "Captain email *", "captain@email.com"],
               ["captain_discord", "Captain Discord *", "@captain"],
             ] as const
           ).map(([key, label, ph]) => (

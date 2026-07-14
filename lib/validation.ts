@@ -35,10 +35,9 @@ export const registrationSchema = z
     captain_email: z
       .string()
       .trim()
+      .min(1, "Captain email is required - we send your registration code and payment updates there")
       .email("Invalid email")
-      .max(120)
-      .optional()
-      .or(z.literal("")),
+      .max(120),
     captain_discord: z.string().trim().min(2, "Captain Discord is required").max(40),
     preferred_contact: z.enum(["whatsapp", "phone", "discord", "email"]),
     notes: z.string().trim().max(1000).optional().or(z.literal("")),

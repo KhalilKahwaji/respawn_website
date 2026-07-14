@@ -1,7 +1,9 @@
 // Called by a Supabase Database Webhook on INSERT into public.teams.
 // Emails the admin list via Resend so nobody has to babysit the dashboard
-// to notice a new team registered.
+// to notice a new team registered, and emails the captain a "complete your
+// payment" confirmation with their registration code.
 import { Resend } from "npm:resend@4";
+import { pendingPaymentEmail, CAPTAIN_EMAIL_BCC } from "../_shared/email-templates.ts";
 
 interface WebhookPayload {
   type: "INSERT" | "UPDATE" | "DELETE";
@@ -175,6 +177,27 @@ Deno.serve(async (req: Request) => {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });
+    }
+
+    // Captain confirmation: "you're registered, complete the payment".
+    // Best-effort - the admin notification above already succeeded, so a
+    // failure here shouldn't make the webhook report an error (Supabase
+    // would retry and re-email the admins).
+    if (record.captain_email) {
+      const captainMsg = pendingPaymentEmail({
+        teamName,
+        captainName,
+        registrationCode: code,
+      });
+      const { error: captainErr } = await resend.emails.send({
+        from: fromEmail,
+        to: [record.captain_email],
+        bcc: [CAPTAIN_EMAIL_BCC],
+        subject: captainMsg.subject,
+        text: captainMsg.text,
+        html: captainMsg.html,
+      });
+      if (captainErr) console.error("Captain email failed:", captainErr);
     }
 
     return new Response(JSON.stringify({ ok: true }), {
