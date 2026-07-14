@@ -87,6 +87,9 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
           <p className="mt-2 text-zinc-300">
             Your team has been registered and is <span className="text-amber-300 font-semibold">pending payment</span>.
           </p>
+          <p className="mt-2 text-sm text-amber-300 font-semibold">
+            One step left: your registration is only complete once you pay the {tournament.entryFee} entry fee below and upload your payment proof.
+          </p>
           <p className="mt-3 text-sm text-zinc-400">Save your registration code - you'll need it to check status and upload proof:</p>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
             <span className="code-chip text-sm sm:text-lg px-3 sm:px-5 py-1.5 sm:py-2.5">{code}</span>

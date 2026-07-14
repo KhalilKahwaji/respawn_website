@@ -352,7 +352,10 @@ export default function RegisterForm() {
       <div className="card mt-6 p-6 sm:p-8 text-center">
         <p className="text-sm text-zinc-400">
           Submitting registers your team as <span className="text-amber-300 font-semibold">Pending Payment</span>.
-          You'll get a registration code like <span className="code-chip">{tournament.codePrefix}-00866841953</span> (derived from your captain phone) and full Whish payment instructions.
+          You'll get a registration code like <span className="code-chip">{tournament.codePrefix}-00866841953</span> and full Whish payment instructions.
+        </p>
+        <p className="mt-3 text-sm text-rose-300 font-semibold">
+          Your registration is only complete once the {tournament.entryFee} entry fee is paid and proof is uploaded — unpaid teams don&apos;t get a slot.
         </p>
         <button onClick={submit} disabled={submitting} className="btn-primary mt-6 px-12 py-4 text-base">
           {submitting ? (

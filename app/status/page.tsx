@@ -52,8 +52,11 @@ export default function StatusPage() {
         Track your <span className="neon-cyan">team</span>
       </h1>
       <p className="mt-3 text-zinc-400">
-        Enter your registration code (e.g. <span className="font-mono text-neon-magenta">RGL-CS2-00866841953</span>) or the
-        captain phone number you registered with.
+        Enter your registration code (e.g. <span className="font-mono text-neon-magenta">RGL-CS2-00866841953</span>).
+      </p>
+      <p className="mt-2 text-zinc-300">
+        <span className="text-neon-cyan font-semibold">No code?</span> The captain&apos;s phone number you registered
+        with works too — just type it in below.
       </p>
 
       <form onSubmit={lookup} className="card mt-8 flex flex-col sm:flex-row gap-3 p-5">
