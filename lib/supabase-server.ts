@@ -29,7 +29,16 @@ export function serviceClient(): SupabaseClient {
       "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local",
     );
   }
-  _service = createClient(url, key, { auth: { persistSession: false } });
+  _service = createClient(url, key, {
+    auth: { persistSession: false },
+    global: {
+      // Next.js patches fetch and caches GET responses in its Data Cache,
+      // so server-rendered pages (e.g. /teams) can keep replaying a stale
+      // Supabase read - even under `dynamic = "force-dynamic"`. Opt every
+      // Supabase request out so reads always hit the live database.
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
+  });
   return _service;
 }
 
