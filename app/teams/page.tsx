@@ -3,6 +3,13 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Approved Teams",
+  description:
+    "The confirmed CS2 lineups competing in Lebanon's Respawn Heatwave 2026 esports tournament - every roster here has been verified and approved.",
+  alternates: { canonical: "/teams" },
+};
+
 interface PublicTeamRow {
   team_name: string;
   team_logo_url: string | null;

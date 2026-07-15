@@ -133,6 +133,24 @@ export default function HomePage() {
         </ol>
       </section>
 
+      {/* ---------- ABOUT / SEO ---------- */}
+      <section className="mx-auto max-w-4xl px-4 py-14 text-center">
+        <p className="section-eyebrow">The Venue</p>
+        <h2 className="mt-3 font-display text-3xl sm:text-4xl font-bold uppercase">
+          Lebanon&apos;s <span className="neon-magenta">esports arena</span>
+        </h2>
+        <p className="mx-auto mt-5 max-w-2xl text-zinc-400 leading-relaxed">
+          {tournament.organizer} is a premier gaming lounge in Lebanon and the home of competitive
+          Counter-Strike 2. Together with {tournament.partner}, the Lebanese Esports Federation, we host
+          esports tournaments that bring the local scene together - online on Faceit, with the semifinals
+          and finals played live on stage at the lounge in front of a crowd.
+        </p>
+        <p className="mx-auto mt-4 max-w-2xl text-zinc-400 leading-relaxed">
+          Whether you grind Faceit from home or pull up to the best gaming setup in town, {tournament.shortName}{" "}
+          is your shot at a {tournament.prizePool} prize pool - and at settling who really runs Lebanon&apos;s CS2 scene.
+        </p>
+      </section>
+
       {/* ---------- FINAL CTA ---------- */}
       <section className="mx-auto max-w-4xl px-4 py-20 text-center">
         <div className="card relative overflow-hidden p-10 sm:p-14">

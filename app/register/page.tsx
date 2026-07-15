@@ -5,6 +5,12 @@ import RegisterForm from "@/components/RegisterForm";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Register Your CS2 Team",
+  description: `Register your 5v5 CS2 team for ${tournament.name} - a ${tournament.prizePool} esports tournament in Lebanon by ${tournament.organizer} × ${tournament.partner}. Limited to ${tournament.maxTeams} teams.`,
+  alternates: { canonical: "/register" },
+};
+
 /** Slots taken by any team not rejected - rejected teams give their slot back. */
 async function getOpenSlots(): Promise<number | null> {
   try {

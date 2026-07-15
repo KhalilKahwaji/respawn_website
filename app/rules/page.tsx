@@ -1,6 +1,10 @@
 import { tournament } from "@/lib/config";
 
-export const metadata = { title: `Rules - ${tournament.name}` };
+export const metadata = {
+  title: "Tournament Rules & Format",
+  description: `Official rulebook for ${tournament.name}: double-elimination CS2 format on Faceit, map veto process, eligibility, anti-cheat, and payment policy. Online matches with live finals at ${tournament.organizer}, Lebanon.`,
+  alternates: { canonical: "/rules" },
+};
 
 /**
  * Edit the rules here - each section is plain data, so updating copy
