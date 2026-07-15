@@ -12,6 +12,7 @@ const sections: { id: string; title: string; rules: string[] }[] = [
     title: "Tournament format",
     rules: [
       `${tournament.format}, hosted on Faceit.`,
+      `The tournament is played online, except the semifinals and the finals, which are played live at ${tournament.organizer}'s premises.`,
       `Up to ${tournament.maxTeams} teams. Bracket and seeding are managed on Faceit by Respawn admins.`,
       "A loss in the upper bracket drops a team to the lower bracket; a second loss eliminates them. Upper bracket matches are BO1, lower bracket matches are BO3, and the Grand Final is BO5.",
       "Match start times are announced on Discord and on the Faceit championship page.",
