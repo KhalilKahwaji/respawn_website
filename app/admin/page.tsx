@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import StatusPill from "@/components/StatusPill";
 import { STATUS_LABELS, type TeamStatus } from "@/lib/config";
+import { validateImage } from "@/lib/validation";
 import type { TeamWithPlayers } from "@/lib/types";
 
 type AdminTeam = TeamWithPlayers & { payment_proof_url: string | null; faceit_checks: any };
@@ -36,6 +37,7 @@ export default function AdminDashboard() {
   const [filter, setFilter] = useState<"all" | TeamStatus>("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [logoBusyId, setLogoBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -99,6 +101,41 @@ export default function AdminDashboard() {
     const notes = window.prompt("Admin notes (shown to the captain):", t.admin_notes ?? "");
     if (notes === null) return;
     updateTeam(t.id, { admin_notes: notes });
+  }
+
+  function editName(t: AdminTeam) {
+    const name = window.prompt("New team name:", t.team_name);
+    if (name === null) return;
+    const trimmed = name.trim();
+    if (trimmed.length < 2) {
+      alert("Team name must be at least 2 characters.");
+      return;
+    }
+    if (trimmed === t.team_name) return;
+    updateTeam(t.id, { team_name: trimmed });
+  }
+
+  async function uploadLogo(id: string, file: File) {
+    const err = validateImage(file, "Team logo");
+    if (err) {
+      alert(err);
+      return;
+    }
+    setLogoBusyId(id);
+    try {
+      const fd = new FormData();
+      fd.append("logo", file);
+      const res = await fetch(`/api/admin/teams/${id}/logo`, { method: "POST", body: fd });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      setTeams((ts) =>
+        ts?.map((t) => (t.id === id ? { ...t, team_logo_url: json.team_logo_url } : t)) ?? null,
+      );
+    } catch {
+      alert("Logo upload failed - try again.");
+    } finally {
+      setLogoBusyId(null);
+    }
   }
 
   const visible = useMemo(() => {
@@ -276,9 +313,40 @@ export default function AdminDashboard() {
                       <button disabled={busy} onClick={() => updateTeam(t.id, { status: "pending_payment" })} className="btn-ghost btn-sm">
                         Reset to pending
                       </button>
+                      <button disabled={busy} onClick={() => editName(t)} className="btn-ghost btn-sm">
+                        ✎ Name
+                      </button>
                       <button disabled={busy} onClick={() => editNotes(t)} className="btn-ghost btn-sm">
                         ✎ Notes
                       </button>
+                    </div>
+
+                    {/* Team logo */}
+                    <div className="mt-4 flex items-center gap-3">
+                      {t.team_logo_url ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={t.team_logo_url} alt="" className="h-12 w-12 rounded-lg border border-edge object-cover" />
+                      ) : (
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-dashed border-edge text-[10px] text-zinc-600">
+                          LOGO
+                        </div>
+                      )}
+                      <label
+                        className={`btn-ghost btn-sm cursor-pointer ${logoBusyId === t.id ? "pointer-events-none opacity-60" : ""}`}
+                      >
+                        {logoBusyId === t.id ? "Uploading…" : t.team_logo_url ? "Change logo" : "Add logo"}
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          className="hidden"
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) uploadLogo(t.id, f);
+                            e.currentTarget.value = "";
+                          }}
+                        />
+                      </label>
+                      <span className="text-xs text-zinc-600">PNG / JPG / WEBP, max 5 MB</span>
                     </div>
 
                     <div className="mt-5 grid gap-5 lg:grid-cols-3">

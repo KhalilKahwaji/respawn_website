@@ -54,6 +54,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   try {
     const body = await req.json();
+    const db = serviceClient();
     const update: Record<string, unknown> = {};
 
     if (body.status !== undefined) {
@@ -65,11 +66,27 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (body.admin_notes !== undefined) update.admin_notes = String(body.admin_notes).slice(0, 2000) || null;
     if (body.missing_fields !== undefined) update.missing_fields = String(body.missing_fields).slice(0, 1000) || null;
 
+    if (body.team_name !== undefined) {
+      const name = String(body.team_name).trim();
+      if (name.length < 2 || name.length > 60) {
+        return NextResponse.json({ error: "Team name must be 2-60 characters." }, { status: 400 });
+      }
+      // Enforce the same case-insensitive uniqueness as registration, excluding this team.
+      const { data: clash } = await db
+        .from("teams")
+        .select("id")
+        .ilike("team_name", name)
+        .neq("id", params.id)
+        .maybeSingle();
+      if (clash) {
+        return NextResponse.json({ error: `Another team is already named “${name}”.` }, { status: 409 });
+      }
+      update.team_name = name;
+    }
+
     if (Object.keys(update).length === 0) {
       return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
     }
-
-    const db = serviceClient();
 
     // Read the current status first so the approval email only fires on a
     // real transition into "approved", not on re-saves of an approved team.
@@ -83,7 +100,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       .from("teams")
       .update(update)
       .eq("id", params.id)
-      .select("id, status, admin_notes, missing_fields, team_name, captain_name, captain_email, registration_code")
+      .select("id, status, admin_notes, missing_fields, team_name, team_logo_url, captain_name, captain_email, registration_code")
       .single();
 
     if (error || !data) {
@@ -96,7 +113,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     return NextResponse.json({
-      team: { id: data.id, status: data.status, admin_notes: data.admin_notes, missing_fields: data.missing_fields },
+      team: {
+        id: data.id,
+        status: data.status,
+        admin_notes: data.admin_notes,
+        missing_fields: data.missing_fields,
+        team_name: data.team_name,
+        team_logo_url: data.team_logo_url,
+      },
     });
   } catch {
     return NextResponse.json({ error: "Unexpected server error" }, { status: 500 });
