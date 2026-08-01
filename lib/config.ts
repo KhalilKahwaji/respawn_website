@@ -3,23 +3,22 @@
  * Everything here is public-facing copy. Secrets belong in .env.local.
  */
 
-// Registration always closes this many days before kickoff.
-export const REGISTRATION_CLOSES_DAYS_BEFORE = 7;
+// ISO date string used by the countdown timer.
+const startDate = "2026-08-10T18:00:00+03:00";
 
-// ISO date string used by the countdown timer (placeholder).
-const startDate = "2026-08-08T18:00:00+03:00";
-
-// Registration closes exactly this many ms before kickoff - the raw cutoff
-// used to gate new registrations, in addition to the human-readable label.
-const registrationDeadlineMs = new Date(startDate).getTime() - REGISTRATION_CLOSES_DAYS_BEFORE * 86_400_000;
+// Hard cutoff for new registrations - the night before kickoff. Set as an
+// explicit instant (not derived from startDate) so the closing time can move
+// independently of the tournament date.
+const registrationDeadline = "2026-08-09T23:59:00+03:00";
+const registrationDeadlineMs = new Date(registrationDeadline).getTime();
 
 /**
  * Format the registration deadline in the tournament's local timezone.
  * Formatted manually (no locale/TZ lookup) so the server and client render
  * identical strings - no hydration mismatch.
  */
-function formatDeadlineLabel(ms: number, startIso: string) {
-  const offset = startIso.match(/([+-])(\d{2}):?(\d{2})$/);
+function formatDeadlineLabel(ms: number, isoWithOffset: string) {
+  const offset = isoWithOffset.match(/([+-])(\d{2}):?(\d{2})$/);
   const offsetMin = offset
     ? (offset[1] === "-" ? -1 : 1) * (Number(offset[2]) * 60 + Number(offset[3]))
     : 0;
@@ -42,11 +41,12 @@ export const tournament = {
   // Collaboration partner - co-hosting the tournament with Respawn.
   partner: "LERF",
   startDate,
-  startDateLabel: "August 8, 2026 - 6:00 PM",
-  registrationClosesDaysBefore: REGISTRATION_CLOSES_DAYS_BEFORE,
+  startDateLabel: "August 10, 2026 - 6:00 PM",
+  // Short human phrase for when registration shuts - used in marketing copy.
+  registrationClosesNote: "the night before kickoff",
   // Raw cutoff instant - compare against Date.now() to gate registration.
   registrationDeadline: new Date(registrationDeadlineMs),
-  registrationDeadlineLabel: formatDeadlineLabel(registrationDeadlineMs, startDate),
+  registrationDeadlineLabel: formatDeadlineLabel(registrationDeadlineMs, registrationDeadline),
   prizePool: "$4,000",
   entryFee: "$125 / team",
   format: "5v5 - Double Elimination",

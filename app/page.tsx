@@ -77,7 +77,7 @@ export default function HomePage() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-magenta opacity-75" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-neon-magenta" />
                 </span>
-                Registration closes {tournament.registrationClosesDaysBefore} days before kickoff
+                Registration closes {tournament.registrationClosesNote}
               </p>
               <p className="mt-3 text-xs uppercase tracking-[0.3em] text-muted">Last day to register</p>
               <p className="mt-1 font-display text-2xl sm:text-3xl font-black text-white">
@@ -107,7 +107,7 @@ export default function HomePage() {
           <p className="text-sm text-zinc-400">
             <span className="text-neon-cyan font-semibold">Registration deadline:</span>{" "}
             {tournament.registrationDeadlineLabel}{" "}
-            <span className="text-muted">({tournament.registrationClosesDaysBefore} days before kickoff)</span>
+            <span className="text-muted">({tournament.registrationClosesNote})</span>
           </p>
           <p className="text-sm text-zinc-400">
             Payment via <span className="text-neon-magenta font-semibold">Whish</span> · manual admin approval

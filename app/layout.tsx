@@ -11,7 +11,7 @@ const defaultTitle = `${tournament.shortName} - ${tournament.prizePool} CS2 Tour
 const ogDescription =
   `${tournament.organizer}, Lebanon's esports gaming lounge, × ${tournament.partner} present a 5v5 CS2 showdown ` +
   `for a ${tournament.prizePool} prize pool - online on Faceit, with live semifinals and finals at the lounge. ` +
-  `Lock your team's slot - registration closes ${tournament.registrationClosesDaysBefore} days before kickoff.`;
+  `Lock your team's slot - registration closes ${tournament.registrationClosesNote}.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
