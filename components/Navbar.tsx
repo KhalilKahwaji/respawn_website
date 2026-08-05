@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { features } from "@/lib/config";
 
 const links = [
   { href: "/", label: "Home" },
   { href: "/register", label: "Register" },
-  { href: "/teams", label: "Teams" },
+  ...(features.publicTeamsPage ? [{ href: "/teams", label: "Teams" }] : []),
   { href: "/sponsors", label: "Sponsors" },
   { href: "/rules", label: "Rules" },
   { href: "/status", label: "Check Status" },

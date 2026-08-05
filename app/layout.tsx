@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { tournament } from "@/lib/config";
+import { features, tournament } from "@/lib/config";
 import Navbar from "@/components/Navbar";
 import FooterSponsors from "@/components/FooterSponsors";
 import Link from "next/link";
@@ -147,7 +147,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <nav className="flex items-center gap-6 text-sm text-muted">
               <Link href="/rules" className="hover:text-neon-cyan transition-colors">Rules</Link>
-              <Link href="/teams" className="hover:text-neon-cyan transition-colors">Teams</Link>
+              {features.publicTeamsPage && (
+                <Link href="/teams" className="hover:text-neon-cyan transition-colors">Teams</Link>
+              )}
               <Link href="/status" className="hover:text-neon-cyan transition-colors">Check Status</Link>
               <Link href="/admin" className="hover:text-neon-magenta transition-colors">Admin</Link>
             </nav>

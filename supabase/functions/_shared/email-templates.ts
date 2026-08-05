@@ -148,7 +148,9 @@ export function pendingPaymentEmail(input: CaptainEmailInput): RenderedEmail {
 
 export function approvedEmail(input: CaptainEmailInput): RenderedEmail {
   const { teamName, captainName, registrationCode } = input;
-  const teamsUrl = `${SITE_URL}/teams`;
+  // The public roster is hidden (features.publicTeamsPage in lib/config.ts), so
+  // captains are sent to Discord + their status page instead of /teams.
+  const statusUrl = `${SITE_URL}/status`;
 
   const subject = `${teamName} is locked in - see you in the arena`;
 
@@ -159,10 +161,10 @@ export function approvedEmail(input: CaptainEmailInput): RenderedEmail {
     `Format: ${T.format}\n` +
     `Prize pool: ${T.prizePool}\n` +
     `Where: ${T.location}\n\n` +
-    `Your team is now on the public roster - check it out:\n` +
-    `${teamsUrl}\n\n` +
     `Keep an eye on Discord for match scheduling and announcements:\n` +
     `${T.discordServerUrl}\n\n` +
+    `You can re-check your team's status anytime:\n` +
+    `${statusUrl}\n\n` +
     `See you in the arena.\n` +
     `- ${T.organizer}\n`;
 
@@ -182,10 +184,10 @@ export function approvedEmail(input: CaptainEmailInput): RenderedEmail {
     </table>
 
     <div style="margin-top:24px;text-align:center;">
-      ${button(teamsUrl, "See your team on the roster &rarr;")}
+      ${button(T.discordServerUrl, "Join the Discord for match scheduling &rarr;")}
     </div>
     <div style="margin-top:12px;text-align:center;">
-      <a href="${T.discordServerUrl}" style="font-size:13px;color:#8a8a99;">Join the Discord for match scheduling &rarr;</a>
+      <a href="${statusUrl}" style="font-size:13px;color:#8a8a99;">Check your team status anytime &rarr;</a>
     </div>
 
     <p style="margin:26px 0 0;text-align:center;font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#ff2fb9;">

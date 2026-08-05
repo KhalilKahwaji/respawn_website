@@ -64,6 +64,17 @@ export const tournament = {
   codePrefix: "RGL-CS2",
 };
 
+/**
+ * Feature switches for public surfaces. Flip a flag back to `true` to bring
+ * the surface back everywhere at once - nav, footer, sitemap, robots and the
+ * route itself all read from here.
+ */
+export const features = {
+  // Public approved-teams roster. Hidden for now: the route 404s and is kept
+  // out of the nav, footer, sitemap and search indexes.
+  publicTeamsPage: false,
+};
+
 export const STATUSES = [
   "pending_payment",
   "under_review",

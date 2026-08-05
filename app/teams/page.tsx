@@ -1,14 +1,18 @@
 import { serviceClient } from "@/lib/supabase-server";
+import { features } from "@/lib/config";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Approved Teams",
-  description:
-    "The confirmed CS2 lineups competing in Lebanon's Respawn Heatwave 2026 esports tournament - every roster here has been verified and approved.",
-  alternates: { canonical: "/teams" },
-};
+export const metadata = features.publicTeamsPage
+  ? {
+      title: "Approved Teams",
+      description:
+        "The confirmed CS2 lineups competing in Lebanon's Respawn Heatwave 2026 esports tournament - every roster here has been verified and approved.",
+      alternates: { canonical: "/teams" },
+    }
+  : { title: "Approved Teams", robots: { index: false, follow: false } };
 
 interface PublicTeamRow {
   team_name: string;
@@ -33,6 +37,10 @@ async function getApprovedTeams(): Promise<PublicTeamRow[] | null> {
 }
 
 export default async function TeamsPage() {
+  // Hidden surface - render the standard 404 rather than an empty roster, and
+  // skip the DB read entirely. Flip features.publicTeamsPage to restore it.
+  if (!features.publicTeamsPage) notFound();
+
   const teams = await getApprovedTeams();
 
   return (
