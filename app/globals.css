@@ -611,30 +611,6 @@ body {
   to   { transform: scaleX(1); opacity: 1; }
 }
 
-/* ---------- Voucher ticket ---------- */
-/* Dashed ticket with punched notches on both sides. */
-.voucher {
-  position: relative;
-  border: 1.5px dashed rgba(232, 121, 249, 0.5);
-  background:
-    radial-gradient(ellipse 60% 80% at 100% 50%, rgba(232, 121, 249, 0.1), transparent 70%),
-    rgba(13, 12, 21, 0.8);
-}
-.voucher::before,
-.voucher::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 22px;
-  height: 22px;
-  border-radius: 9999px;
-  background: #07060b;
-  border: 1.5px dashed rgba(232, 121, 249, 0.5);
-  transform: translateY(-50%);
-}
-.voucher::before { left: -12px; clip-path: inset(0 0 0 50%); }
-.voucher::after  { right: -12px; clip-path: inset(0 50% 0 0); }
-
 /* ---------- Misc ---------- */
 .section-eyebrow {
   @apply font-mono text-xs uppercase tracking-[0.3em] text-neon-cyan;

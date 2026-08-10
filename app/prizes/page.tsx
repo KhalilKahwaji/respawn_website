@@ -1,5 +1,4 @@
 import { CSSProperties } from "react";
-import Link from "next/link";
 import HeroBackground from "@/components/HeroBackground";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import { PRIZE_SPLIT_PLAYERS, prizePoolTotal, prizes, tournament } from "@/lib/config";
@@ -14,7 +13,6 @@ export const metadata = {
 };
 
 const cashPrizes = prizes.filter((p) => p.amount > 0);
-const voucherPrize = prizes.find((p) => p.amount === 0);
 
 /** "1600" -> "1,600" - grouped by hand so server and client render identically. */
 function group(n: number) {
@@ -40,27 +38,6 @@ const podiumStyles: Record<number, { column: string; fill: string; text: string;
 
 const splitClass: Record<number, string> = { 1: "split-1", 2: "split-2", 3: "split-3" };
 
-const payoutNotes = [
-  {
-    title: "Awarded at the finals",
-    body: `The semifinals and the grand final are played live at ${tournament.organizer} - the podium is settled and the prizes are handed over on the night.`,
-  },
-  {
-    title: "Cash for the top three",
-    body: `${tournament.prizePool} in cash, split ${cashPrizes.map((p) => p.label).join(" / ")} across 1st, 2nd and 3rd place.`,
-  },
-  {
-    title: "4th doesn't leave empty",
-    body: `A $150 ${tournament.organizer} voucher goes to the fourth-place team - extra on top of the cash pool, redeemable at the lounge.`,
-  },
-];
-
-const road = [
-  { step: "01", title: "Online bracket", body: `${tournament.maxTeams} teams, ${tournament.format.toLowerCase()} on Faceit. One loss drops you to the lower bracket, two knocks you out.` },
-  { step: "02", title: "Live semifinals", body: `The last four teams play on stage at ${tournament.organizer} - every one of them finishes in the money.` },
-  { step: "03", title: "BO5 grand final", body: "Best of five for the title, the trophy and the $1,600 top prize." },
-];
-
 function Trophy({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
@@ -79,15 +56,6 @@ function Medal({ className }: { className?: string }) {
       <circle cx="12" cy="15" r="5.5" />
       <path d="M8.5 9.6 6 3h5l1.8 3.6" />
       <path d="M15.5 9.6 18 3h-5" />
-    </svg>
-  );
-}
-
-function Ticket({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
-      <path d="M3 8.5V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 0 0 7V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2.5a2.5 2.5 0 0 0 0-7Z" />
-      <path d="M12 8v1.5M12 11.5V13M12 15v1.5" />
     </svg>
   );
 }
@@ -268,106 +236,6 @@ export default function PrizesPage() {
           Cash placements add up to exactly {tournament.prizePool}. The 4th-place voucher is an extra from{" "}
           {tournament.organizer}, not a slice of the pool.
         </p>
-      </section>
-
-      {/* ---------- VOUCHER TICKET ---------- */}
-      {voucherPrize && (
-        <section className="mx-auto max-w-3xl px-4 pb-16">
-          <div data-reveal className="voucher rounded-2xl px-6 py-7 sm:px-10 sm:py-8">
-            <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
-              <Ticket className="h-12 w-12 shrink-0 text-neon-magenta" />
-              <div className="flex-1">
-                <p className="font-mono text-[0.65rem] uppercase tracking-[0.25em] text-neon-magenta">
-                  4th place bonus
-                </p>
-                <p className="mt-1.5 font-display text-2xl sm:text-3xl font-black uppercase">
-                  <span className="neon-magenta">$150 voucher</span>{" "}
-                  <span className="text-zinc-400 text-lg sm:text-xl">from {tournament.organizer}</span>
-                </p>
-                <p className="mt-2 text-sm text-zinc-400">
-                  Fourth place walks away with lounge credit instead of cash - redeemable at{" "}
-                  {tournament.organizer}. Every team that reaches the semifinals leaves with something.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      <hr className="tube mx-auto max-w-4xl" />
-
-      {/* ---------- PAYOUT NOTES ---------- */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <p data-reveal className="section-eyebrow text-center">Good to know</p>
-        <h2
-          data-reveal
-          className="mt-3 text-center font-display text-3xl sm:text-4xl font-bold uppercase"
-          style={{ transitionDelay: "80ms" }}
-        >
-          Getting <span className="neon-magenta">paid</span>
-        </h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {payoutNotes.map((n, i) => (
-            <div key={n.title} data-reveal className="card-glow h-full p-6" style={{ transitionDelay: `${i * 110}ms` }}>
-              <h3 className="font-display text-lg font-bold">{n.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-400">{n.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------- ROAD TO THE PRIZE ---------- */}
-      <section className="mx-auto max-w-6xl px-4 pb-16">
-        <p data-reveal className="section-eyebrow text-center">Road to the prize</p>
-        <h2
-          data-reveal
-          className="mt-3 text-center font-display text-3xl sm:text-4xl font-bold uppercase"
-          style={{ transitionDelay: "80ms" }}
-        >
-          Three wins from the <span className="prize-gold">top spot</span>
-        </h2>
-        <ol className="mt-10 grid gap-4 md:grid-cols-3">
-          {road.map((r, i) => (
-            <li
-              key={r.step}
-              data-reveal
-              className="card-glow relative h-full p-6"
-              style={{ transitionDelay: `${i * 110}ms` }}
-            >
-              <span className="font-mono text-xs text-neon-magenta">STEP {r.step}</span>
-              <h3 className="mt-3 font-display text-lg font-bold">{r.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-400">{r.body}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* ---------- CTA ---------- */}
-      <section className="mx-auto max-w-4xl px-4 pb-20">
-        <div data-reveal className="card relative overflow-hidden p-10 sm:p-14 text-center">
-          <div className="absolute inset-0 grid-bg" aria-hidden />
-          <div className="relative">
-            <h2 className="font-display text-3xl sm:text-4xl font-black uppercase">
-              <span className="prize-gold">${group(prizePoolTotal)}</span> says it&apos;s worth it
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-zinc-400">
-              Know the format, know the veto, know what you&apos;re playing for. The rulebook has the rest.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/rules" className="btn-primary px-9 py-4">
-                Read the Rules
-              </Link>
-              <a
-                href={tournament.discordServerUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-ghost px-9 py-4"
-              >
-                Join the Discord
-              </a>
-            </div>
-          </div>
-        </div>
       </section>
     </>
   );
