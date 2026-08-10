@@ -1,4 +1,4 @@
-import { tournament } from "@/lib/config";
+import { prizes, tournament } from "@/lib/config";
 
 export const metadata = {
   title: "Tournament Rules & Format",
@@ -20,6 +20,16 @@ const sections: { id: string; title: string; rules: string[] }[] = [
       `Up to ${tournament.maxTeams} teams. Bracket and seeding are managed on Faceit by Respawn admins.`,
       "A loss in the upper bracket drops a team to the lower bracket; a second loss eliminates them. Upper bracket matches are BO1, lower bracket matches are BO3, and the Grand Final is BO5.",
       "Match start times are announced on Discord and on the Faceit championship page.",
+    ],
+  },
+  {
+    id: "prizes",
+    title: "Prize pool & distribution",
+    rules: [
+      `Total prize pool: ${tournament.prizePool} in cash, split across the top three teams.`,
+      ...prizes.map((p) => `${p.ordinal} place: ${p.label}${p.amount > 0 ? "" : ` - ${p.note}`}.`),
+      "The fourth-place voucher is an extra from Respawn and is not taken out of the cash pool.",
+      "Prizes are awarded once the grand final is played and any pending disputes are settled by the admins.",
     ],
   },
   {
@@ -137,7 +147,7 @@ export default function RulesPage() {
         Tournament <span className="neon-cyan">rules</span>
       </h1>
       <p className="mt-3 max-w-2xl text-zinc-400">
-        Read these before registering. By submitting a team, the captain confirms the whole roster accepts the
+        Read these before you play. By entering a team, the captain confirms the whole roster accepts the
         rulebook and admin authority.
       </p>
 

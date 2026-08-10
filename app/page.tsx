@@ -1,20 +1,22 @@
 import Link from "next/link";
-import { tournament } from "@/lib/config";
+import { prizes, tournament } from "@/lib/config";
 import Countdown from "@/components/Countdown";
 import HeroBackground from "@/components/HeroBackground";
 
+const firstPlace = prizes[0];
+
 const stats = [
   { label: "Prize Pool", value: tournament.prizePool, accent: "neon-magenta" },
-  { label: "Entry Fee", value: tournament.entryFee, accent: "" },
+  { label: "1st Place", value: firstPlace.label, accent: "prize-gold" },
   { label: "Format", value: "5v5", accent: "" },
   { label: "Team Slots", value: `${tournament.maxTeams}`, accent: "neon-cyan" },
 ];
 
 const flow = [
-  { title: "Register your team", desc: "Captain submits the full roster - 5 mains + up to 2 bench - with Steam and Faceit details." },
-  { title: "Pay via Whish", desc: "Send the entry fee to our Whish number and include your registration code in the note." },
-  { title: "Upload proof", desc: "Upload your payment screenshot. Our admins review every payment manually." },
-  { title: "Get approved", desc: "Once approved, your team goes public and the captain is notified with next steps." },
+  { title: "Rosters locked", desc: `Registration is closed - the ${tournament.maxTeams} approved teams are the ones playing.` },
+  { title: "Online bracket", desc: "Double elimination on Faceit. Upper bracket BO1, lower bracket BO3 - two losses and you're out." },
+  { title: "Live semifinals", desc: `The final four play on stage at ${tournament.organizer}, in front of a crowd.` },
+  { title: "Grand final", desc: `A BO5 for the title and the ${firstPlace.label} top prize - the podium is paid on the night.` },
 ];
 
 export default function HomePage() {
@@ -57,8 +59,8 @@ export default function HomePage() {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-rise">
-            <Link href="/register" className="btn-primary text-base px-9 py-4 animate-pulseGlow">
-              Register Your Team
+            <Link href="/prizes" className="btn-primary text-base px-9 py-4 animate-pulseGlow">
+              See the Prize Pool
             </Link>
             <Link href="/rules" className="btn-ghost text-base px-9 py-4">
               View Rules
@@ -77,14 +79,15 @@ export default function HomePage() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-magenta opacity-75" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-neon-magenta" />
                 </span>
-                Registration closes {tournament.registrationClosesNote}
+                Playing for {tournament.prizePool} in cash
               </p>
-              <p className="mt-3 text-xs uppercase tracking-[0.3em] text-muted">Last day to register</p>
-              <p className="mt-1 font-display text-2xl sm:text-3xl font-black text-white">
-                {tournament.registrationDeadlineLabel}
+              <p className="mt-3 text-xs uppercase tracking-[0.3em] text-muted">Champions take home</p>
+              <p className="prize-gold mt-1 font-display text-3xl sm:text-4xl font-black">{firstPlace.label}</p>
+              <p className="mt-2 text-xs text-zinc-500">
+                {prizes.slice(1).map((p) => `${p.ordinal} ${p.label}`).join(" · ")}
               </p>
-              <Link href="/register" className="btn-primary btn-sm mt-4">
-                Register before it closes
+              <Link href="/prizes" className="btn-primary btn-sm mt-4">
+                Full prize breakdown
               </Link>
             </div>
           </div>
@@ -105,13 +108,12 @@ export default function HomePage() {
         </div>
         <div className="card mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4">
           <p className="text-sm text-zinc-400">
-            <span className="text-neon-cyan font-semibold">Registration deadline:</span>{" "}
-            {tournament.registrationDeadlineLabel}{" "}
-            <span className="text-muted">({tournament.registrationClosesNote})</span>
+            <span className="text-neon-cyan font-semibold">Prize distribution:</span>{" "}
+            {prizes.map((p) => `${p.ordinal} ${p.label}`).join(" · ")}
           </p>
-          <p className="text-sm text-zinc-400">
-            Payment via <span className="text-neon-magenta font-semibold">Whish</span> · manual admin approval
-          </p>
+          <Link href="/prizes" className="text-sm font-semibold text-neon-magenta hover:text-neon-pink transition-colors">
+            See the full breakdown →
+          </Link>
         </div>
       </section>
 
@@ -119,7 +121,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-10 pb-4">
         <p className="section-eyebrow text-center">Path to the server</p>
         <h2 className="mt-3 text-center font-display text-3xl sm:text-4xl font-bold uppercase">
-          From sign-up to <span className="neon-cyan">first pistol round</span>
+          From first pistol round to <span className="neon-cyan">the payout</span>
         </h2>
 
         <ol className="mt-12 grid gap-4 md:grid-cols-4">
@@ -157,19 +159,24 @@ export default function HomePage() {
           <div className="absolute inset-0 grid-bg" aria-hidden />
           <div className="relative">
             <h2 className="font-display text-3xl sm:text-4xl font-black uppercase">
-              Slots are <span className="neon-magenta">limited</span>
+              <span className="prize-gold">{tournament.prizePool}</span> on the line
             </h2>
             <p className="mx-auto mt-4 max-w-md text-zinc-400">
-              Only {tournament.maxTeams} teams make it in - and only approved teams hold a slot.
-              Lock yours before the deadline.
+              {tournament.maxTeams} teams, one bracket, four places that pay. See exactly what every
+              podium finish is worth.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="btn-primary px-9 py-4">
-                Register Your Team
+              <Link href="/prizes" className="btn-primary px-9 py-4">
+                Prize Distribution
               </Link>
-              <Link href="/status" className="btn-ghost px-9 py-4">
-                Check Registration
-              </Link>
+              <a
+                href={tournament.discordServerUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-ghost px-9 py-4"
+              >
+                Join the Discord
+              </a>
             </div>
           </div>
         </div>

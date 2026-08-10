@@ -16,7 +16,7 @@ const T = {
   name: "RESPAWN HEATWAVE 2026",
   organizer: "Respawn Gaming Lounge",
   startDateLabel: "August 10, 2026 - 6:00 PM",
-  prizePool: "$4,000",
+  prizePool: "$3,000",
   entryFee: "$125 / team",
   format: "5v5 - Double Elimination",
   whishNumber: "+961 81 632 209",

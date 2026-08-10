@@ -69,8 +69,10 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
             <span className="code-chip">{code}</span>.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
-            <Link href="/status" className="btn-primary">Check status</Link>
-            <Link href="/" className="btn-ghost">Back home</Link>
+            <Link href="/" className="btn-primary">Back home</Link>
+            <a href={tournament.discordServerUrl} target="_blank" rel="noreferrer" className="btn-ghost">
+              Join Discord
+            </a>
           </div>
         </div>
       </div>

@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { features } from "@/lib/config";
+import { features, tournament } from "@/lib/config";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/register", label: "Register" },
+  { href: "/prizes", label: "Prizes" },
   ...(features.publicTeamsPage ? [{ href: "/teams", label: "Teams" }] : []),
   { href: "/sponsors", label: "Sponsors" },
   { href: "/rules", label: "Rules" },
-  { href: "/status", label: "Check Status" },
 ];
 
 export default function Navbar() {
@@ -44,8 +43,8 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <Link href="/register" className="btn-primary btn-sm ml-3">
-              Register Team
+            <Link href="/prizes" className="btn-primary btn-sm ml-3">
+              {tournament.prizePool} Prize Pool
             </Link>
           </nav>
 
@@ -75,8 +74,8 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <Link href="/register" onClick={() => setOpen(false)} className="btn-primary mt-2">
-              Register Team
+            <Link href="/prizes" onClick={() => setOpen(false)} className="btn-primary mt-2">
+              {tournament.prizePool} Prize Pool
             </Link>
           </nav>
         )}

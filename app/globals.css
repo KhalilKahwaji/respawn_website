@@ -430,6 +430,211 @@ body {
   50%      { filter: drop-shadow(0 0 30px rgba(251, 146, 60, 0.7)) drop-shadow(0 0 65px rgba(244, 63, 94, 0.4)); }
 }
 
+/* ============================================================
+   Scroll reveal (driven by components/RevealOnScroll.tsx)
+   ============================================================ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Bars and podium blocks hold at frame zero until their block scrolls in. */
+[data-reveal] .podium-fill,
+[data-reveal].split-bar,
+[data-reveal] .share-bar > i {
+  animation-play-state: paused;
+}
+[data-reveal].is-in .podium-fill,
+[data-reveal].is-in.split-bar,
+[data-reveal].is-in .share-bar > i {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Prize pool
+   ============================================================ */
+
+/* Gold neon for the headline figure and the champion slot. */
+.prize-gold {
+  color: #ffd76a;
+  text-shadow:
+    0 0 10px rgba(255, 215, 106, 0.6),
+    0 0 30px rgba(251, 146, 60, 0.35),
+    0 0 70px rgba(244, 63, 94, 0.2);
+}
+
+/* Money never reflows while it animates. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Podium ---------- */
+/* The column keeps its (responsive) height from utility classes; only the
+   filled bar animates, so the rank numeral on top never gets squashed. */
+.podium-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px 14px 0 0;
+  border: 1px solid;
+  border-bottom: none;
+  transform-origin: bottom;
+  animation: podiumGrow 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  overflow: hidden;
+}
+/* Diagonal sheen sliding across the block. */
+.podium-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.16) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: podiumSheen 5s ease-in-out 1s infinite;
+}
+/* Each block keeps colour all the way down so it reads as standing ON the
+   floor line, with a bright inset base where the two meet. */
+.podium-1 {
+  border-color: rgba(255, 215, 106, 0.55);
+  background: linear-gradient(180deg, rgba(255, 215, 106, 0.3), rgba(255, 215, 106, 0.12) 70%, rgba(255, 215, 106, 0.2));
+  box-shadow:
+    0 0 34px rgba(255, 199, 60, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -3px 0 rgba(255, 215, 106, 0.55);
+}
+.podium-2 {
+  border-color: rgba(79, 227, 255, 0.45);
+  background: linear-gradient(180deg, rgba(79, 227, 255, 0.24), rgba(79, 227, 255, 0.09) 70%, rgba(79, 227, 255, 0.16));
+  box-shadow:
+    0 0 26px rgba(79, 227, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -3px 0 rgba(79, 227, 255, 0.45);
+}
+.podium-3 {
+  border-color: rgba(167, 139, 250, 0.45);
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.24), rgba(167, 139, 250, 0.09) 70%, rgba(167, 139, 250, 0.16));
+  box-shadow:
+    0 0 26px rgba(167, 139, 250, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -3px 0 rgba(167, 139, 250, 0.45);
+}
+/* Neon strip the three columns stand on. */
+.podium-floor {
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 106, 0.55) 25%, rgba(79, 227, 255, 0.45) 60%, transparent);
+  box-shadow: 0 0 18px rgba(255, 199, 60, 0.25), 0 0 34px rgba(79, 227, 255, 0.15);
+}
+.podium-rank {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.14);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+@keyframes podiumGrow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+@keyframes podiumSheen {
+  0%        { transform: translateX(-120%); }
+  35%, 100% { transform: translateX(220%); }
+}
+
+/* ---------- Share bars ---------- */
+.share-bar {
+  height: 0.4rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.share-bar > i {
+  display: block;
+  height: 100%;
+  width: var(--w, 0%);
+  border-radius: 9999px;
+  animation: barGrow 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes barGrow {
+  from { width: 0; }
+  to   { width: var(--w, 0%); }
+}
+
+/* Single stacked bar showing how the pool splits across the podium. */
+.split-bar {
+  display: flex;
+  height: 2.75rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  transform-origin: left;
+  animation: splitGrow 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.split-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: rgba(7, 6, 11, 0.85);
+  font-weight: 700;
+  border-right: 1px solid rgba(7, 6, 11, 0.35);
+}
+.split-seg:last-child { border-right: none; }
+.split-1 { background: linear-gradient(180deg, #ffe08a, #f6a94a); }
+.split-2 { background: linear-gradient(180deg, #7ceaff, #38bdf8); }
+.split-3 { background: linear-gradient(180deg, #c4b5fd, #a78bfa); }
+
+@keyframes splitGrow {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+
+/* ---------- Voucher ticket ---------- */
+/* Dashed ticket with punched notches on both sides. */
+.voucher {
+  position: relative;
+  border: 1.5px dashed rgba(232, 121, 249, 0.5);
+  background:
+    radial-gradient(ellipse 60% 80% at 100% 50%, rgba(232, 121, 249, 0.1), transparent 70%),
+    rgba(13, 12, 21, 0.8);
+}
+.voucher::before,
+.voucher::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #07060b;
+  border: 1.5px dashed rgba(232, 121, 249, 0.5);
+  transform: translateY(-50%);
+}
+.voucher::before { left: -12px; clip-path: inset(0 0 0 50%); }
+.voucher::after  { right: -12px; clip-path: inset(0 50% 0 0); }
+
 /* ---------- Misc ---------- */
 .section-eyebrow {
   @apply font-mono text-xs uppercase tracking-[0.3em] text-neon-cyan;

@@ -61,7 +61,7 @@ export default async function TeamsPage() {
         <div className="card mt-10 p-12 text-center">
           <p className="font-display text-xl text-zinc-400">No approved teams yet</p>
           <p className="mt-2 text-sm text-zinc-500">Be the first lineup on the board.</p>
-          <Link href="/register" className="btn-primary mt-6">Register your team</Link>
+          <Link href="/prizes" className="btn-primary mt-6">See the prize pool</Link>
         </div>
       ) : (
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

@@ -6,34 +6,6 @@
 // ISO date string used by the countdown timer.
 const startDate = "2026-08-10T18:00:00+03:00";
 
-// Hard cutoff for new registrations - the night before kickoff. Set as an
-// explicit instant (not derived from startDate) so the closing time can move
-// independently of the tournament date.
-const registrationDeadline = "2026-08-09T23:59:00+03:00";
-const registrationDeadlineMs = new Date(registrationDeadline).getTime();
-
-/**
- * Format the registration deadline in the tournament's local timezone.
- * Formatted manually (no locale/TZ lookup) so the server and client render
- * identical strings - no hydration mismatch.
- */
-function formatDeadlineLabel(ms: number, isoWithOffset: string) {
-  const offset = isoWithOffset.match(/([+-])(\d{2}):?(\d{2})$/);
-  const offsetMin = offset
-    ? (offset[1] === "-" ? -1 : 1) * (Number(offset[2]) * 60 + Number(offset[3]))
-    : 0;
-  const local = new Date(ms + offsetMin * 60_000); // shift so UTC getters read local time
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-  ];
-  let h = local.getUTCHours();
-  const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  const mm = String(local.getUTCMinutes()).padStart(2, "0");
-  return `${months[local.getUTCMonth()]} ${local.getUTCDate()}, ${local.getUTCFullYear()} - ${h}:${mm} ${ampm}`;
-}
-
 export const tournament = {
   name: "RESPAWN HEATWAVE 2026",
   shortName: "Heatwave 2026",
@@ -42,12 +14,7 @@ export const tournament = {
   partner: "LERF",
   startDate,
   startDateLabel: "August 10, 2026 - 6:00 PM",
-  // Short human phrase for when registration shuts - used in marketing copy.
-  registrationClosesNote: "the night before kickoff",
-  // Raw cutoff instant - compare against Date.now() to gate registration.
-  registrationDeadline: new Date(registrationDeadlineMs),
-  registrationDeadlineLabel: formatDeadlineLabel(registrationDeadlineMs, registrationDeadline),
-  prizePool: "$4,000",
+  prizePool: "$3,000",
   entryFee: "$125 / team",
   format: "5v5 - Double Elimination",
   maxTeams: 16,
@@ -63,6 +30,42 @@ export const tournament = {
   location: "Respawn Gaming Lounge / Online via Faceit",
   codePrefix: "RGL-CS2",
 };
+
+/**
+ * Prize breakdown. `amount` is the cash paid out of the prize pool; a place
+ * with `amount: 0` is a non-cash reward described by `label` (so it stays out
+ * of the pool total and the share bars).
+ */
+export type Prize = {
+  place: number;
+  /** "1st", "2nd", ... - used for badges and podium blocks. */
+  ordinal: string;
+  /** Display value: "$1,600" or "$150 voucher". */
+  label: string;
+  /** Cash contribution to the prize pool, in USD. 0 for non-cash rewards. */
+  amount: number;
+  /** One-line description of what the place actually wins. */
+  note: string;
+};
+
+export const prizes: Prize[] = [
+  { place: 1, ordinal: "1st", label: "$1,600", amount: 1600, note: `Champions of ${tournament.shortName}` },
+  { place: 2, ordinal: "2nd", label: "$900", amount: 900, note: "Grand final runner-up" },
+  { place: 3, ordinal: "3rd", label: "$500", amount: 500, note: "Third-place finisher" },
+  {
+    place: 4,
+    ordinal: "4th",
+    label: "$150 voucher",
+    amount: 0,
+    note: `${tournament.organizer} voucher, on top of the ${tournament.prizePool} cash pool`,
+  },
+];
+
+/** Total cash on the line - always matches the sum of the cash placements. */
+export const prizePoolTotal = prizes.reduce((sum, p) => sum + p.amount, 0);
+
+/** Players per team that share a cash prize (the 5 mains). */
+export const PRIZE_SPLIT_PLAYERS = 5;
 
 /**
  * Feature switches for public surfaces. Flip a flag back to `true` to bring

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { features, tournament } from "@/lib/config";
+import { features, prizes, tournament } from "@/lib/config";
 import Navbar from "@/components/Navbar";
 import FooterSponsors from "@/components/FooterSponsors";
 import Link from "next/link";
@@ -10,8 +10,8 @@ const siteUrl = "https://www.respawnlb.com";
 const defaultTitle = `${tournament.shortName} - ${tournament.prizePool} CS2 Tournament in Lebanon`;
 const ogDescription =
   `${tournament.organizer}, Lebanon's esports gaming lounge, × ${tournament.partner} present a 5v5 CS2 showdown ` +
-  `for a ${tournament.prizePool} prize pool - online on Faceit, with live semifinals and finals at the lounge. ` +
-  `Lock your team's slot - registration closes ${tournament.registrationClosesNote}.`;
+  `for a ${tournament.prizePool} prize pool - $1,600 for 1st, $900 for 2nd, $500 for 3rd and a $150 voucher for 4th. ` +
+  `Online on Faceit, with live semifinals and finals at the lounge.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -99,14 +99,8 @@ const jsonLd = [
       },
     ],
     organizer: { "@id": `${siteUrl}/#organization` },
-    offers: {
-      "@type": "Offer",
-      name: "Team entry fee",
-      price: "125",
-      priceCurrency: "USD",
-      url: `${siteUrl}/register`,
-      availability: "https://schema.org/LimitedAvailability",
-    },
+    // Registration is closed - the event is described by what it pays out.
+    award: prizes.map((p) => `${p.ordinal} place: ${p.label}`).join(", "),
   },
 ];
 
@@ -146,11 +140,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </span>
             </div>
             <nav className="flex items-center gap-6 text-sm text-muted">
+              <Link href="/prizes" className="hover:text-neon-cyan transition-colors">Prizes</Link>
               <Link href="/rules" className="hover:text-neon-cyan transition-colors">Rules</Link>
               {features.publicTeamsPage && (
                 <Link href="/teams" className="hover:text-neon-cyan transition-colors">Teams</Link>
               )}
-              <Link href="/status" className="hover:text-neon-cyan transition-colors">Check Status</Link>
               <Link href="/admin" className="hover:text-neon-magenta transition-colors">Admin</Link>
             </nav>
           </div>
