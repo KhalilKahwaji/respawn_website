@@ -22,9 +22,8 @@ export default function ReviewPage() {
             Rate the <span className="neon-cyan">tournament</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base text-zinc-400 animate-rise sm:text-lg">
-            Three quick questions and a blank box. Every field is optional, and every review is{" "}
-            <span className="text-neon-magenta font-semibold">100% anonymous</span> - we don't ask
-            for your name, your team, or anything that could point back at you.
+            Give us a {" "}
+            <span className="text-neon-magenta font-semibold">100% anonymous</span>review so we can be better!
           </p>
         </div>
       </section>
