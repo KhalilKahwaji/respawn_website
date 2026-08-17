@@ -11,6 +11,7 @@ const links = [
   ...(features.publicTeamsPage ? [{ href: "/teams", label: "Teams" }] : []),
   { href: "/sponsors", label: "Sponsors" },
   { href: "/rules", label: "Rules" },
+  { href: "/review", label: "Review" },
 ];
 
 export default function Navbar() {

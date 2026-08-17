@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { REVIEW_MAX_RATING, REVIEW_QUESTIONS } from "./config";
 
 const phone = z
   .string()
@@ -77,6 +78,34 @@ export const registrationSchema = z
   });
 
 export type RegistrationInput = z.infer<typeof registrationSchema>;
+
+/**
+ * Anonymous tournament review. Every rating is optional (null = skipped) and
+ * so is the comment, but a submission has to carry at least one of them -
+ * mirrored by the `reviews_not_empty` check constraint in the database.
+ */
+const rating = z
+  .number()
+  .int("Ratings must be whole stars")
+  .min(1)
+  .max(REVIEW_MAX_RATING)
+  .nullable()
+  .optional();
+
+export const reviewSchema = z
+  .object({
+    rating_experience: rating,
+    rating_return: rating,
+    rating_organization: rating,
+    comment: z.string().trim().max(2000, "Please keep your review under 2000 characters").optional(),
+  })
+  .refine(
+    (r) =>
+      REVIEW_QUESTIONS.some((q) => typeof r[q.key] === "number") || Boolean(r.comment?.trim()),
+    { message: "Rate at least one question or write a review before submitting." },
+  );
+
+export type ReviewInput = z.infer<typeof reviewSchema>;
 
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
 export const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];

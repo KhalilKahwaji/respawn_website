@@ -81,6 +81,14 @@ Admin dashboard: `http://localhost:3000/admin` (redirects to login).
 
 Admin dashboard → **Export CSV**. The file is UTF-8 with BOM (opens cleanly in Excel) and has **one row per player** with team columns repeated, which imports nicely into Google Sheets (`File → Import`).
 
+## Anonymous reviews
+
+`/review` collects post-tournament feedback: three 1-10 star questions plus a free-text box, **all optional** (a submission just has to carry at least one answer). The questions live in `REVIEW_QUESTIONS` in [`lib/config.ts`](lib/config.ts) - the form, the API validator and the admin view all read from that one list, so editing a question there is enough.
+
+Read them in the dashboard at **/admin/reviews** (linked from the top of the team dashboard): per-question averages, filters for written-only and low scores, full-text search over the comments, and a delete button for spam.
+
+"Anonymous" is meant literally - no name, no team, no registration code, no session. The only thing stored alongside a review is a salted SHA-256 hash of the submitter's IP, used solely to cap one submitter at 3 reviews/hour, and it is excluded from the admin API response so reviews can't be grouped by author. Set `REVIEW_IP_SALT` to control that salt (it falls back to `ADMIN_SESSION_SECRET`); rotating either makes every existing hash unlinkable from new ones.
+
 ## Security model
 
 - **No client-side database access.** RLS is on with no policies; the browser anon key cannot read or write any table. Every read/write goes through Next.js route handlers using the service-role key, which validate everything.
@@ -118,7 +126,8 @@ app/
   status/                # Check registration status (code or phone)
   teams/                 # Public approved teams
   rules/                 # Tournament rules (editable array)
-  admin/                 # Protected dashboard (+ /admin/login)
+  review/                # Anonymous post-tournament feedback form
+  admin/                 # Protected dashboard (+ /admin/login, /admin/reviews)
   api/                   # All server-side data access
 components/              # Navbar, StatusPill, Countdown
 lib/                     # config, types, zod validation, supabase clients, faceit

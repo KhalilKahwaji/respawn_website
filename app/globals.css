@@ -611,6 +611,14 @@ body {
   to   { transform: scaleX(1); opacity: 1; }
 }
 
+/* ============================================================
+   Reviews - star rating
+   ============================================================ */
+.star-on {
+  color: #ffd76a;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 106, 0.55)) drop-shadow(0 0 16px rgba(251, 146, 60, 0.3));
+}
+
 /* ---------- Misc ---------- */
 .section-eyebrow {
   @apply font-mono text-xs uppercase tracking-[0.3em] text-neon-cyan;

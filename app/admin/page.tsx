@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import StatusPill from "@/components/StatusPill";
 import { STATUS_LABELS, type TeamStatus } from "@/lib/config";
@@ -181,7 +182,8 @@ export default function AdminDashboard() {
             Team <span className="neon-cyan">control</span>
           </h1>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          <Link href="/admin/reviews" className="btn-ghost btn-sm">★ Reviews</Link>
           <a href="/api/admin/export" className="btn-ghost btn-sm">⬇ Export CSV</a>
           <button onClick={load} className="btn-ghost btn-sm">Refresh</button>
           <button onClick={signOut} className="btn-danger btn-sm">Sign out</button>

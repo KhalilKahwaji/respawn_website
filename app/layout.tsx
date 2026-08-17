@@ -142,6 +142,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav className="flex items-center gap-6 text-sm text-muted">
               <Link href="/prizes" className="hover:text-neon-cyan transition-colors">Prizes</Link>
               <Link href="/rules" className="hover:text-neon-cyan transition-colors">Rules</Link>
+              <Link href="/review" className="hover:text-neon-cyan transition-colors">Review</Link>
               {features.publicTeamsPage && (
                 <Link href="/teams" className="hover:text-neon-cyan transition-colors">Teams</Link>
               )}

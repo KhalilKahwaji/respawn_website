@@ -72,6 +72,33 @@ create table if not exists public.admins (
   created_at timestamptz not null default now()
 );
 
+-- ---------- Reviews ----------
+-- Anonymous tournament feedback submitted from /review. Nothing here links
+-- back to a team or a person: the three ratings are optional (1-10), the
+-- written review is optional, and `submitter_hash` is a salted one-way hash
+-- of the submitter's IP used ONLY to rate-limit spam - it can't be reversed
+-- into an address and is never shown in the admin dashboard.
+create table if not exists public.reviews (
+  id uuid primary key default gen_random_uuid(),
+  rating_experience smallint check (rating_experience between 1 and 10),
+  rating_return smallint check (rating_return between 1 and 10),
+  rating_organization smallint check (rating_organization between 1 and 10),
+  comment text,
+  submitter_hash text,
+  created_at timestamptz not null default now(),
+  -- A review with no ratings AND no comment carries no information.
+  constraint reviews_not_empty check (
+    rating_experience is not null
+    or rating_return is not null
+    or rating_organization is not null
+    or (comment is not null and length(btrim(comment)) > 0)
+  )
+);
+
+create index if not exists reviews_created_idx on public.reviews (created_at desc);
+-- Supports the "how many reviews from this hash in the last hour" spam check.
+create index if not exists reviews_submitter_idx on public.reviews (submitter_hash, created_at desc);
+
 -- ---------- Keepalive ----------
 -- Single-row table (id is always 1) that the `keepalive` Edge Function
 -- upserts on a schedule, purely so Supabase sees write activity and never
@@ -107,6 +134,9 @@ create trigger teams_touch before update on public.teams
 alter table public.teams enable row level security;
 alter table public.players enable row level security;
 alter table public.admins enable row level security;
+-- Reviews are written by anonymous visitors, but still only through the
+-- server route handler - the anon key can neither insert nor read them.
+alter table public.reviews enable row level security;
 -- No policies created on purpose: anon/authenticated clients cannot
 -- read or write these tables directly.
 

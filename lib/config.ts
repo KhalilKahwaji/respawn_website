@@ -78,6 +78,35 @@ export const features = {
   publicTeamsPage: false,
 };
 
+/**
+ * The three rated questions on /review. `key` is the database column, so the
+ * public form, the API validator and the admin dashboard all stay in sync
+ * from this one list. Every rating is optional - a visitor can answer none,
+ * some or all of them and still leave a written review.
+ */
+export const REVIEW_QUESTIONS = [
+  {
+    key: "rating_experience",
+    label: `How much did you enjoy ${tournament.shortName}?`,
+    hint: "1 = not at all · 10 = loved every second",
+  },
+  {
+    key: "rating_return",
+    label: "How likely are you to play the next one?",
+    hint: "1 = never again · 10 = already signing up",
+  },
+  {
+    key: "rating_organization",
+    label: "How well was the tournament run?",
+    hint: "Scheduling, communication, admins, servers",
+  },
+] as const;
+
+export type ReviewRatingKey = (typeof REVIEW_QUESTIONS)[number]["key"];
+
+/** Highest rating on the star scale (stars run 1..REVIEW_MAX_RATING). */
+export const REVIEW_MAX_RATING = 10;
+
 export const STATUSES = [
   "pending_payment",
   "under_review",

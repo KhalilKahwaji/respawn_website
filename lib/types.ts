@@ -49,6 +49,19 @@ export interface PublicTeam {
   bench_nicknames: string[];
 }
 
+/**
+ * An anonymous tournament review. Ratings run 1-10 and are all optional, as
+ * is the written comment - `submitter_hash` never leaves the server.
+ */
+export interface Review {
+  id: string;
+  rating_experience: number | null;
+  rating_return: number | null;
+  rating_organization: number | null;
+  comment: string | null;
+  created_at: string;
+}
+
 /** A tournament sponsor / partner shown on the Sponsors page and footer. */
 export interface Sponsor {
   id: string;
