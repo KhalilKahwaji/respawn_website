@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import HeroBackground from "@/components/HeroBackground";
+import MagneticButton from "@/components/MagneticButton";
+import SocialLinks from "@/components/SocialLinks";
 import { lounge, routes, tournament } from "@/lib/config";
 
 /** Rendered letter by letter under the brand mark. */
@@ -47,6 +49,10 @@ export default function LoungeHero() {
       frame = 0;
       el.style.setProperty("--mx", `${x}%`);
       el.style.setProperty("--my", `${y}%`);
+      // Same pointer position drives a shallow parallax on the brand mark,
+      // so the hero has depth rather than just a moving light.
+      el.style.setProperty("--par-x", `${((x - 50) / 50) * 16}px`);
+      el.style.setProperty("--par-y", `${((y - 50) / 50) * 12}px`);
     };
     const onMove = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
@@ -72,7 +78,7 @@ export default function LoungeHero() {
 
       <div className="relative z-10 mx-auto w-full max-w-5xl px-4 py-16 text-center sm:py-20">
         {/* Logo with orbiting rings */}
-        <div className="relative mx-auto flex h-44 w-full items-center justify-center sm:h-56">
+        <div className="hero-parallax relative mx-auto flex h-44 w-full items-center justify-center sm:h-56">
           <span className="orbit o1" aria-hidden />
           <span className="orbit o2 hidden sm:block" aria-hidden />
           <span className="orbit o3 hidden lg:block" aria-hidden />
@@ -119,17 +125,21 @@ export default function LoungeHero() {
           className="mt-9 flex animate-rise flex-col items-center justify-center gap-4 sm:flex-row"
           style={{ animationDelay: "940ms" }}
         >
-          <Link href={routes.tournament} className="btn-primary animate-pulseGlow px-9 py-4 text-base">
-            {tournament.shortName} →
-          </Link>
-          <a
-            href={lounge.discordUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-ghost px-9 py-4 text-base"
-          >
-            Join the Discord
-          </a>
+          <MagneticButton>
+            <Link href={routes.tournament} className="btn-primary animate-pulseGlow px-9 py-4 text-base">
+              {tournament.shortName} →
+            </Link>
+          </MagneticButton>
+          <MagneticButton>
+            <a
+              href={lounge.discordUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-ghost px-9 py-4 text-base"
+            >
+              Join the Discord
+            </a>
+          </MagneticButton>
         </div>
 
         <div
@@ -146,6 +156,8 @@ export default function LoungeHero() {
           <span>{tournament.prizePool} paid out</span>
           <span>{tournament.maxTeams} teams hosted</span>
         </div>
+
+        <SocialLinks className="mt-8 animate-rise justify-center" />
       </div>
 
       {/* Scroll cue */}

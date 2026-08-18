@@ -161,18 +161,19 @@ export const lounge = {
   tagline: "Lebanon's home for competitive gaming",
   blurb:
     "A gaming lounge and esports venue in Lebanon - open play on serious hardware, " +
-    "and the stage where the country's biggest Counter-Strike finals get played in front of a crowd.",
+    "and the stage where the country's biggest tournaments finals get played in front of a crowd.",
   phone: tournament.contactPhone,
   discordUrl: tournament.discordServerUrl,
 
+  instagramUrl: "https://www.instagram.com/respawn.lb/",
+  /** Google Maps link behind the "Get directions" button. */
+  mapsUrl: "https://maps.app.goo.gl/8U4xN2BrrzyuwuKc8",
+
   // ---- Fill these in to light up the matching blocks -------------------
-  /** Street address, e.g. "Main St, Jounieh, Lebanon". */
+  /** Street address, e.g. "Main St, Jounieh, Lebanon". Shown on the map card. */
   address: null as string | null,
-  /** Google Maps link for the "Get directions" button. */
-  mapsUrl: null as string | null,
   /** Opening hours, e.g. "Daily · 2 PM - 2 AM". */
   hours: null as string | null,
-  instagramUrl: null as string | null,
   tiktokUrl: null as string | null,
 };
 

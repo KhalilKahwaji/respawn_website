@@ -3,6 +3,8 @@ import "./globals.css";
 import { lounge, routes, tournament } from "@/lib/config";
 import Navbar from "@/components/Navbar";
 import FooterSponsors from "@/components/FooterSponsors";
+import HideOnRoutes from "@/components/HideOnRoutes";
+import SocialLinks from "@/components/SocialLinks";
 import ScrollProgress from "@/components/ScrollProgress";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
@@ -11,7 +13,7 @@ const siteUrl = "https://www.respawnlb.com";
 const defaultTitle = `${lounge.name} - Esports & Gaming Lounge in Lebanon`;
 const siteDescription =
   `${lounge.name} is a gaming lounge and esports venue in Lebanon: open play on serious hardware, ` +
-  `and the stage where the country's biggest Counter-Strike finals are played live in front of a crowd. ` +
+  `and the stage where the country's biggest Tournaments are played live in front of a crowd. ` +
   `Home of ${tournament.name}, a ${tournament.prizePool} CS2 tournament.`;
 
 export const metadata: Metadata = {
@@ -100,8 +102,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-edge/60 mt-20">
-          <FooterSponsors />
-          <div className="mx-auto max-w-6xl px-4 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Sponsors are the tournament's, not the lounge's - keep the strip
+              off the landing page. */}
+          <HideOnRoutes routes={["/"]}>
+            <FooterSponsors />
+          </HideOnRoutes>
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 py-10 lg:flex-row">
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -113,6 +119,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 © {new Date().getFullYear()} {lounge.name}
               </span>
             </div>
+            <SocialLinks />
+
             <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted">
               <Link href={routes.tournament} className="hover:text-neon-cyan transition-colors">
                 {tournament.shortName}
