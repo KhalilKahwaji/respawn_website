@@ -168,6 +168,12 @@ export const lounge = {
   instagramUrl: "https://www.instagram.com/respawn.lb/",
   /** Google Maps link behind the "Get directions" button. */
   mapsUrl: "https://maps.app.goo.gl/8U4xN2BrrzyuwuKc8",
+  /**
+   * Coordinates of the Google Maps listing above, used to render the map
+   * preview on the landing page. Read off the resolved place URL - update
+   * both together if the listing ever moves.
+   */
+  coords: { lat: 34.0903409, lng: 35.6514754 },
 
   // ---- Fill these in to light up the matching blocks -------------------
   /** Street address, e.g. "Main St, Jounieh, Lebanon". Shown on the map card. */

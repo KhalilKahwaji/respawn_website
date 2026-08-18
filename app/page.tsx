@@ -6,6 +6,7 @@ import Marquee from "@/components/Marquee";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import SocialLinks from "@/components/SocialLinks";
 import TiltCard from "@/components/TiltCard";
+import VaultLink from "@/components/VaultLink";
 import { lounge, loungeOfferings, loungeStats, routes, tournament, tournamentIndex } from "@/lib/config";
 
 export const metadata = {
@@ -71,6 +72,14 @@ function SectionHead({
 
 export default function LoungeHomePage() {
   const event = tournamentIndex[0];
+  // Keyless Google Maps embed centred on the listing's real coordinates, so
+  // the card shows the actual streets around the lounge. `hl=en` keeps the
+  // labels in English whatever the visitor's locale is; `iwloc=` drops the
+  // info bubble. Google still offsets its own marker slightly within the
+  // frame - that is internal to their embed and not worth fighting.
+  const mapEmbedSrc =
+    `https://maps.google.com/maps?q=${lounge.coords.lat},${lounge.coords.lng}` +
+    `&z=16&hl=en&iwloc=&output=embed`;
   const status = statusStyles[event.status];
 
   return (
@@ -174,7 +183,7 @@ export default function LoungeHomePage() {
         </SectionHead>
 
         <div data-reveal className="mt-16">
-          <Link href={event.href} className="group block">
+          <VaultLink href={event.href} className="group block">
             <article className="poster p-8 sm:p-12">
               <span className="poster-year" aria-hidden>
                 2026
@@ -229,7 +238,7 @@ export default function LoungeHomePage() {
                 </div>
               </div>
             </article>
-          </Link>
+          </VaultLink>
         </div>
 
         <p data-reveal className="mt-10 text-center text-sm text-zinc-500">
@@ -289,12 +298,30 @@ export default function LoungeHomePage() {
                 href={lounge.mapsUrl ?? lounge.discordUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="map-card group flex h-full min-h-[19rem] flex-col justify-between p-8"
+                className="map-card group flex h-full min-h-[22rem] flex-col justify-between p-8"
               >
-                <div className="relative flex items-center gap-3">
-                  <span className="map-pin" aria-hidden />
-                  <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">
-                    Respawn · Lebanon
+                {/* Real map tiles, lazy-loaded and inert - see .map-embed. */}
+                <iframe
+                  className="map-embed"
+                  src={mapEmbedSrc}
+                  loading="lazy"
+                  title=""
+                  aria-hidden="true"
+                  tabIndex={-1}
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+                <span className="map-scrim" aria-hidden />
+
+                <div className="relative flex items-start justify-between gap-3">
+                  <span className="map-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3 w-3">
+                      <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" />
+                      <circle cx="12" cy="10" r="2.5" />
+                    </svg>
+                    Map · Google Maps
+                  </span>
+                  <span className="font-mono text-[10px] tracking-wider text-muted">
+                    {lounge.coords.lat.toFixed(4)}° N · {lounge.coords.lng.toFixed(4)}° E
                   </span>
                 </div>
 
@@ -308,7 +335,7 @@ export default function LoungeHomePage() {
                   </p>
                   {lounge.hours && <p className="mt-3 text-sm text-zinc-400">{lounge.hours}</p>}
                   <p className="mt-3 max-w-sm text-sm text-zinc-400">
-                    Open the map for the exact spot, parking and the fastest way in.
+                    Tap the map for turn-by-turn directions in Google Maps.
                   </p>
                   <span className="btn-ghost btn-sm mt-6 inline-flex transition-transform duration-300 group-hover:translate-x-1">
                     Get directions →

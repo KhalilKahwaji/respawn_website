@@ -1228,3 +1228,355 @@ body {
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
+
+/* ---------- Map preview ---------- */
+/* The embedded map is a picture, not a control: pointer-events are off so it
+   can never swallow a scroll or a drag, and the whole card is a single link
+   to Google Maps instead. */
+.map-embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+  /* Google ships a light map; invert and re-rotate the hue to sit it in the
+     dark neon palette instead of punching a white hole in the page. */
+  filter: invert(92%) hue-rotate(190deg) saturate(0.75) brightness(0.92) contrast(1.05);
+  opacity: 0.55;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+.map-card:hover .map-embed {
+  opacity: 0.75;
+  filter: invert(92%) hue-rotate(190deg) saturate(0.95) brightness(1) contrast(1.08);
+}
+
+/* Keeps the copy readable over the map whatever the tiles look like. */
+.map-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(7, 6, 11, 0.96) 8%, rgba(7, 6, 11, 0.65) 45%, rgba(7, 6, 11, 0.35) 100%),
+    radial-gradient(ellipse 70% 60% at 50% 40%, transparent 30%, rgba(7, 6, 11, 0.6) 100%);
+}
+
+/* Corner chip that says, unmistakably, "this is a map". */
+.map-chip {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-neon-cyan/40 bg-void/80 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] text-neon-cyan backdrop-blur-sm;
+}
+
+/* ============================================================
+   Vault transition (components/VaultLink)
+   ============================================================ */
+
+/* One shared duration drives every layer, and each layer uses percentage
+   keyframes across the whole timeline. Nothing is chained with delays, so the
+   sequence can never drift out of step with the navigation timer in JS. */
+.vault {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 6, 11, 0);
+  animation: vaultBg var(--vault-dur) linear both;
+}
+@keyframes vaultBg {
+  0%   { background: rgba(7, 6, 11, 0); }
+  15%  { background: rgba(7, 6, 11, 0.98); }
+  100% { background: rgba(7, 6, 11, 0.98); }
+}
+
+/* What sits behind the doors: the glow you are being let into. */
+.vault-inner {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 60% 55% at 50% 50%, rgba(79, 227, 255, 0.22), transparent 62%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(167, 139, 250, 0.12), transparent 70%);
+  animation: vaultInner var(--vault-dur) ease-out both;
+}
+@keyframes vaultInner {
+  0%, 58%  { opacity: 0; }
+  70%      { opacity: 1; }
+  100%     { opacity: 1; }
+}
+
+/* ---------- The two door leaves ---------- */
+.vault-door {
+  position: absolute;
+  top: -2%;
+  bottom: -2%;
+  width: 50.5%;
+  background:
+    linear-gradient(180deg, #16111f 0%, #0c0912 55%, #100b18 100%);
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.8);
+}
+/* Brushed-metal banding, kept cheap with a repeating gradient. */
+.vault-door::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.022) 0 2px,
+    transparent 2px 7px
+  );
+}
+/* Concentric rings radiating from the seam - reads as one big circular door
+   split down the middle rather than two flat panels. */
+.vault-door::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 190vh;
+  height: 190vh;
+  margin-top: -95vh;
+  border-radius: 9999px;
+  background: repeating-radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.05) 0 1px,
+    transparent 1px 46px
+  );
+}
+.vault-door-l::after { right: -95vh; }
+.vault-door-r::after { left: -95vh; }
+.vault-door-l {
+  left: 0;
+  border-right: 1px solid rgba(79, 227, 255, 0.35);
+  animation: vaultDoorL var(--vault-dur) linear both;
+}
+.vault-door-r {
+  right: 0;
+  border-left: 1px solid rgba(232, 121, 249, 0.35);
+  animation: vaultDoorR var(--vault-dur) linear both;
+}
+@keyframes vaultDoorL {
+  0%   { transform: translateX(-101%); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  15%  { transform: translateX(0); }
+  66%  { transform: translateX(0); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+  100% { transform: translateX(-101%); }
+}
+@keyframes vaultDoorR {
+  0%   { transform: translateX(101%); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  15%  { transform: translateX(0); }
+  66%  { transform: translateX(0); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+  100% { transform: translateX(101%); }
+}
+
+/* Neon seam where the leaves meet. */
+.vault-seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(180deg, transparent, var(--cyan), var(--magenta), transparent);
+  opacity: 0;
+  animation: vaultSeam var(--vault-dur) ease-out both;
+}
+@keyframes vaultSeam {
+  0%, 12%  { opacity: 0; }
+  18%      { opacity: 1; box-shadow: 0 0 30px rgba(79, 227, 255, 0.9); }
+  60%      { opacity: 0.7; }
+  70%, 100% { opacity: 0; }
+}
+
+/* ---------- Dial ---------- */
+.vault-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 260px;
+  height: 260px;
+  animation: vaultCore var(--vault-dur) ease-out both;
+}
+@keyframes vaultCore {
+  0%, 12%  { opacity: 0; transform: scale(0.75); }
+  22%      { opacity: 1; transform: scale(1); }
+  62%      { opacity: 1; transform: scale(1); }
+  70%      { opacity: 0; transform: scale(1.25); }
+  100%     { opacity: 0; transform: scale(1.25); }
+}
+
+/* Outer toothed ring - counter-rotates, then snaps still on unlock. */
+.vault-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 3px solid rgba(79, 227, 255, 0.85);
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(79, 227, 255, 0.5) 0deg 3deg,
+      transparent 3deg 12deg
+    );
+  mask-image: radial-gradient(circle, transparent 60%, black 63%);
+  box-shadow:
+    0 0 30px rgba(79, 227, 255, 0.5),
+    inset 0 0 30px rgba(79, 227, 255, 0.35);
+  animation: vaultSpin var(--vault-dur) cubic-bezier(0.3, 0, 0.2, 1) both;
+}
+
+/* Static outer bezel so the spinning ring has something to turn against. */
+.vault-bezel {
+  position: absolute;
+  inset: -22px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(232, 121, 249, 0.45);
+  box-shadow: 0 0 40px rgba(232, 121, 249, 0.2);
+}
+@keyframes vaultSpin {
+  0%, 15% { transform: rotate(0deg); }
+  60%     { transform: rotate(430deg); }
+  100%    { transform: rotate(445deg); }
+}
+
+/* Inner disc with the handle spokes. */
+.vault-dial {
+  position: relative;
+  width: 62%;
+  height: 62%;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background:
+    radial-gradient(circle at 38% 30%, #3a2f58 0%, #221a36 45%, #120d1f 100%);
+  box-shadow:
+    inset 0 3px 14px rgba(255, 255, 255, 0.16),
+    inset 0 -6px 20px rgba(0, 0, 0, 0.7),
+    0 0 46px rgba(79, 227, 255, 0.25);
+  animation: vaultDial var(--vault-dur) cubic-bezier(0.3, 0, 0.2, 1) both;
+}
+@keyframes vaultDial {
+  0%, 15% { transform: rotate(0deg); }
+  60%     { transform: rotate(-300deg); }
+  100%    { transform: rotate(-312deg); }
+}
+.vault-spoke {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 6px;
+  height: 84%;
+  margin-left: -3px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #7ceaff, #e879f9);
+  box-shadow: 0 0 14px rgba(79, 227, 255, 0.8);
+}
+.vault-spoke:nth-child(2) { transform: rotate(60deg); }
+.vault-spoke:nth-child(3) { transform: rotate(120deg); }
+.vault-hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26%;
+  height: 26%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  background: radial-gradient(circle, #4a3a6e, #1a1228);
+  border: 2px solid rgba(79, 227, 255, 0.9);
+  box-shadow: 0 0 24px rgba(79, 227, 255, 0.7), inset 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Four bolts that retract into the ring as the lock releases. */
+.vault-bolt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 26px;
+  margin: -13px 0 0 -5px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(79, 227, 255, 0.8), rgba(79, 227, 255, 0.25));
+  box-shadow: 0 0 12px rgba(79, 227, 255, 0.6);
+  animation: vaultBolt var(--vault-dur) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes vaultBolt {
+  0%, 20% { transform: rotate(var(--a)) translateY(-118px); opacity: 0; }
+  30%     { transform: rotate(var(--a)) translateY(-158px); opacity: 1; }
+  57%     { transform: rotate(var(--a)) translateY(-158px); opacity: 1; }
+  64%     { transform: rotate(var(--a)) translateY(-215px); opacity: 0; }
+  100%    { transform: rotate(var(--a)) translateY(-215px); opacity: 0; }
+}
+
+/* ---------- Status readout ---------- */
+.vault-status {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+}
+.vault-status > span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0;
+}
+.vault-status .s1 {
+  color: var(--cyan);
+  animation: vaultS1 var(--vault-dur) steps(1, end) both;
+}
+.vault-status .s2 {
+  color: #6ee7b7;
+  text-shadow: 0 0 18px rgba(110, 231, 183, 0.7);
+  animation: vaultS2 var(--vault-dur) steps(1, end) both;
+}
+@keyframes vaultS1 {
+  0%, 17%   { opacity: 0; }
+  20%, 56%  { opacity: 1; }
+  57%, 100% { opacity: 0; }
+}
+@keyframes vaultS2 {
+  0%, 56%   { opacity: 0; }
+  58%, 80%  { opacity: 1; }
+  86%, 100% { opacity: 0; }
+}
+
+/* Burst at the moment the lock releases. */
+.vault-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(79, 227, 255, 0.5) 40%, transparent 70%);
+  opacity: 0;
+  animation: vaultFlash var(--vault-dur) ease-out both;
+}
+@keyframes vaultFlash {
+  0%, 57% { opacity: 0; transform: scale(0.2); }
+  60%     { opacity: 1; transform: scale(6); }
+  72%     { opacity: 0; transform: scale(22); }
+  100%    { opacity: 0; transform: scale(22); }
+}
+
+/* Skip hint, faded in once there is something to skip. */
+.vault-skip {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(139, 138, 156, 0.7);
+  animation: vaultSkip var(--vault-dur) ease both;
+}
+@keyframes vaultSkip {
+  0%, 25%   { opacity: 0; }
+  40%, 60%  { opacity: 1; }
+  70%, 100% { opacity: 0; }
+}
