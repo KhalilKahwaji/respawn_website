@@ -1,9 +1,9 @@
-import { prizes, tournament } from "@/lib/config";
+import { prizes, routes, tournament } from "@/lib/config";
 
 export const metadata = {
   title: "Tournament Rules & Format",
   description: `Official rulebook for ${tournament.name}: double-elimination CS2 format on Faceit, map veto process, eligibility, anti-cheat, and payment policy. Online matches with live finals at ${tournament.organizer}, Lebanon.`,
-  alternates: { canonical: "/rules" },
+  alternates: { canonical: routes.rules },
 };
 
 /**

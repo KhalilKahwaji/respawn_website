@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import StarRating from "@/components/StarRating";
-import { REVIEW_QUESTIONS, type ReviewRatingKey, tournament } from "@/lib/config";
+import { REVIEW_QUESTIONS, routes, tournament, type ReviewRatingKey } from "@/lib/config";
 
 type Ratings = Record<ReviewRatingKey, number | null>;
 
@@ -58,8 +58,8 @@ export default function ReviewForm() {
           {tournament.organizer} tournament gets better.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Link href="/" className="btn-primary btn-sm">
-            Back to home
+          <Link href={routes.tournament} className="btn-primary btn-sm">
+            Back to the tournament
           </Link>
           <a
             href={tournament.discordServerUrl}

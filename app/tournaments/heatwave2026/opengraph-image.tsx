@@ -1,16 +1,14 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { lounge, tournament } from "@/lib/config";
+import { tournament } from "@/lib/config";
 
-// Branded link-preview card for the site root (WhatsApp, Twitter/X, Discord,
-// iMessage). The tournament section has its own card - see
-// app/tournaments/heatwave2026/opengraph-image.tsx.
+// Branded link-preview card (WhatsApp, Twitter/X, Discord, iMessage, etc.).
 export const runtime = "nodejs";
 // Generate on demand rather than prerendering: avoids a @vercel/og
 // fileURLToPath("Invalid URL") crash during `next build` on Windows.
 export const dynamic = "force-dynamic";
-export const alt = `${lounge.name} - esports and gaming lounge in Lebanon`;
+export const alt = `${tournament.name} - ${tournament.prizePool} CS2 tournament`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -41,6 +39,7 @@ export default async function OpengraphImage() {
           position: "relative",
         }}
       >
+        {/* neon glow accents */}
         <div
           style={{
             position: "absolute",
@@ -65,48 +64,51 @@ export default async function OpengraphImage() {
         />
 
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logoSrc} alt="" width={170} height={170} style={{ objectFit: "contain" }} />
+        <img src={logoSrc} alt="" width={150} height={150} style={{ objectFit: "contain" }} />
 
         <div
           style={{
-            marginTop: 26,
-            fontSize: 82,
+            marginTop: 28,
+            fontSize: 88,
             fontWeight: 900,
-            letterSpacing: -1,
+            letterSpacing: -2,
             display: "flex",
           }}
         >
-          <span style={{ color: "#4fe3ff" }}>RESPAWN</span>
+          <span style={{ color: "#4fe3ff" }}>CS2</span>
+          <span style={{ color: "#fff", margin: "0 18px" }}> </span>
+          <span style={{ color: "#e879f9" }}>SHOWDOWN</span>
         </div>
 
         <div
           style={{
-            marginTop: 6,
-            fontSize: 30,
-            letterSpacing: 14,
-            color: "#e879f9",
+            marginTop: 18,
+            display: "flex",
+            alignItems: "center",
+            gap: 18,
+            fontSize: 34,
+            fontWeight: 700,
+            color: "#fff",
+          }}
+        >
+          <span>{tournament.prizePool} Prize Pool</span>
+          <span style={{ color: "#3f3a52" }}>•</span>
+          <span>5v5</span>
+        </div>
+
+        <div
+          style={{
+            marginTop: 40,
+            fontSize: 26,
+            letterSpacing: 6,
+            color: "#a9a4bf",
             textTransform: "uppercase",
             display: "flex",
           }}
         >
-          Gaming Lounge
-        </div>
-
-        <div
-          style={{
-            marginTop: 34,
-            fontSize: 28,
-            color: "#a9a4bf",
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
-          <span>Esports venue</span>
-          <span style={{ color: "#3f3a52" }}>•</span>
-          <span>Lebanon</span>
-          <span style={{ color: "#3f3a52" }}>•</span>
-          <span>Home of {tournament.shortName}</span>
+          {tournament.organizer}
+          <span style={{ color: "#4fe3ff", margin: "0 14px" }}>×</span>
+          {tournament.partner}
         </div>
       </div>
     ),

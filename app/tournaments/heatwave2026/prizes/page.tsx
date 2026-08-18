@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import HeroBackground from "@/components/HeroBackground";
 import RevealOnScroll from "@/components/RevealOnScroll";
-import { PRIZE_SPLIT_PLAYERS, prizePoolTotal, prizes, tournament } from "@/lib/config";
+import { PRIZE_SPLIT_PLAYERS, prizePoolTotal, prizes, routes, tournament } from "@/lib/config";
 
 export const metadata = {
   title: "Prize Pool & Distribution",
@@ -9,7 +9,7 @@ export const metadata = {
     `${tournament.prizePool} prize pool for ${tournament.name} - $1,600 for 1st, $900 for 2nd, $500 for 3rd, ` +
     `plus a $150 ${tournament.organizer} voucher for 4th. The CS2 tournament in Lebanon by ` +
     `${tournament.organizer} × ${tournament.partner}.`,
-  alternates: { canonical: "/prizes" },
+  alternates: { canonical: routes.prizes },
 };
 
 const cashPrizes = prizes.filter((p) => p.amount > 0);

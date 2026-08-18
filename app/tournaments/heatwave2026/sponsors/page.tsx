@@ -4,6 +4,7 @@ import { useEffect, useState, CSSProperties } from "react";
 import Link from "next/link";
 import HeroBackground from "@/components/HeroBackground";
 import type { Sponsor } from "@/lib/types";
+import { routes } from "@/lib/config";
 
 type LoadState = "loading" | "ready" | "error";
 
@@ -68,7 +69,7 @@ export default function SponsorsPage() {
             <p className="mt-2 text-sm text-zinc-500">
               Want your brand on the board? Get in touch about partnering with us.
             </p>
-            <Link href="/" className="btn-ghost mt-6">Back home</Link>
+            <Link href={routes.tournament} className="btn-ghost mt-6">Back to the tournament</Link>
           </div>
         )}
 

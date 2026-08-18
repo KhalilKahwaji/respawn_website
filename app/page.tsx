@@ -1,176 +1,329 @@
 import Link from "next/link";
-import { prizes, tournament } from "@/lib/config";
-import Countdown from "@/components/Countdown";
-import HeroBackground from "@/components/HeroBackground";
+import CountUp from "@/components/CountUp";
+import LoungeHero from "@/components/LoungeHero";
+import Marquee from "@/components/Marquee";
+import RevealOnScroll from "@/components/RevealOnScroll";
+import TiltCard from "@/components/TiltCard";
+import { lounge, loungeOfferings, loungeStats, routes, tournament, tournamentIndex } from "@/lib/config";
 
-const firstPlace = prizes[0];
+export const metadata = {
+  alternates: { canonical: "/" },
+};
 
-const stats = [
-  { label: "Prize Pool", value: tournament.prizePool, accent: "neon-magenta" },
-  { label: "1st Place", value: firstPlace.label, accent: "prize-gold" },
-  { label: "Format", value: "5v5", accent: "" },
-  { label: "Team Slots", value: `${tournament.maxTeams}`, accent: "neon-cyan" },
+const tickerItems = [
+  "Counter-Strike 2",
+  `${tournament.prizePool} prize pool`,
+  "Live on-stage finals",
+  "5v5 double elimination",
+  "Faceit qualifiers",
+  "Esports in Lebanon",
+  `${tournament.maxTeams} teams`,
+  "Respawn Gaming Lounge",
 ];
 
-const flow = [
-  { title: "Rosters locked", desc: `Registration is closed - the ${tournament.maxTeams} approved teams are the ones playing.` },
-  { title: "Online bracket", desc: "Double elimination on Faceit. Upper bracket BO1, lower bracket BO3 - two losses and you're out." },
-  { title: "Live semifinals", desc: `The final four play on stage at ${tournament.organizer}, in front of a crowd.` },
-  { title: "Grand final", desc: `A BO5 for the title and the ${firstPlace.label} top prize - the podium is paid on the night.` },
-];
+const accentText: Record<string, string> = {
+  cyan: "text-neon-cyan",
+  magenta: "text-neon-magenta",
+  violet: "text-neon-violet",
+};
+const accentRing: Record<string, string> = {
+  cyan: "border-neon-cyan/40 bg-neon-cyan/5",
+  magenta: "border-neon-magenta/40 bg-neon-magenta/5",
+  violet: "border-neon-violet/40 bg-neon-violet/5",
+};
 
-export default function HomePage() {
+const statusStyles: Record<string, { label: string; cls: string }> = {
+  finished: { label: "Completed", cls: "border-zinc-500/40 bg-zinc-500/10 text-zinc-300" },
+  upcoming: { label: "Upcoming", cls: "border-amber-400/40 bg-amber-400/10 text-amber-300" },
+  live: { label: "Live now", cls: "border-emerald-400/40 bg-emerald-400/10 text-emerald-300" },
+};
+
+export default function LoungeHomePage() {
+  const telHref = `tel:${lounge.phone.replace(/[^\d+]/g, "")}`;
+
   return (
     <>
-      {/* ---------- HERO ---------- */}
-      <section className="relative overflow-hidden">
-        <HeroBackground />
-        <div className="relative z-10 mx-auto max-w-6xl px-4 pt-16 pb-20 sm:pt-24 sm:pb-28 text-center">
-          <p className="section-eyebrow animate-rise">
-            Official Tournament · A {tournament.organizer} × {tournament.partner} Collaboration
-          </p>
+      <RevealOnScroll />
+      {/* Scroll-revealed blocks start hidden - show everything if JS is off. */}
+      <noscript>
+        <style>{"[data-reveal]{opacity:1 !important;transform:none !important}"}</style>
+      </noscript>
 
-          {/* Co-branded lockup - Respawn × LERF */}
-          <div className="mx-auto mt-6 flex items-center justify-center gap-5 sm:gap-8 animate-rise">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/respawn-headshot.webp"
-              alt="Respawn"
-              className="h-20 sm:h-32 w-auto drop-shadow-[0_0_30px_rgba(168,85,247,0.45)]"
-            />
-            <span className="font-display text-3xl sm:text-5xl font-black text-muted/70 leading-none">×</span>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/lerf.webp"
-              alt={tournament.partner}
-              className="h-16 sm:h-24 w-auto drop-shadow-[0_0_30px_rgba(34,211,238,0.35)]"
-            />
-          </div>
+      <LoungeHero />
 
-          <h1 className="mt-4 font-display font-black uppercase leading-none tracking-tight">
-            <span className="heatwave-text block text-4xl sm:text-7xl">Heatwave 2026</span>
-            <span className="mt-2 block text-lg sm:text-3xl tracking-[0.3em] text-zinc-300">Tournament</span>
-          </h1>
+      <Marquee items={tickerItems} />
 
-          <p className="mx-auto mt-5 max-w-xl text-base sm:text-lg text-zinc-400">
-            {tournament.organizer} & {tournament.partner} present a {tournament.format.toLowerCase()} battle for{" "}
-            <span className="text-neon-magenta font-semibold">{tournament.prizePool}</span>.
-            Bring your five. Earn your respawn.
-          </p>
+      {/* ---------- BY THE NUMBERS ---------- */}
+      <section className="mx-auto max-w-6xl px-4 py-20">
+        <div data-reveal className="text-center">
+          <p className="section-eyebrow">Track record</p>
+          <h2 className="section-title mt-3">
+            What we&apos;ve <span className="neon-cyan">put on</span>
+          </h2>
+          <div className="rule-draw mx-auto mt-6 max-w-xs" />
+        </div>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-rise">
-            <Link href="/prizes" className="btn-primary text-base px-9 py-4 animate-pulseGlow">
-              See the Prize Pool
-            </Link>
-            <Link href="/rules" className="btn-ghost text-base px-9 py-4">
-              View Rules
-            </Link>
-          </div>
+        <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {loungeStats.map((s, i) => (
+            <div key={s.label} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
+              <TiltCard>
+                <div className="stat-tile">
+                  <p className="font-display text-3xl font-black sm:text-4xl">
+                    <CountUp
+                      value={s.value}
+                      prefix={s.prefix}
+                      suffix={s.suffix}
+                      className={i === 0 ? "prize-gold" : "text-zinc-100"}
+                    />
+                  </p>
+                  <p className="mt-2 text-[10px] uppercase tracking-[0.25em] text-muted sm:text-xs">
+                    {s.label}
+                  </p>
+                </div>
+              </TiltCard>
+            </div>
+          ))}
+        </div>
 
-          <div className="mt-14">
-            <p className="mb-5 text-xs uppercase tracking-[0.3em] text-muted">Tournament starts in</p>
-            <Countdown target={tournament.startDate} />
-            <p className="mt-5 text-sm text-zinc-500">
-              {tournament.startDateLabel} · {tournament.location}
+        <p data-reveal className="mt-6 text-center text-xs text-muted">
+          Figures from {tournament.name} · {tournament.startDateLabel}.
+        </p>
+      </section>
+
+      {/* ---------- WHAT WE DO ---------- */}
+      <section id="arena" className="scroll-mt-24 border-y border-edge/50 bg-panel/20 py-20">
+        <div className="mx-auto max-w-6xl px-4">
+          <div data-reveal className="text-center">
+            <p className="section-eyebrow">The arena</p>
+            <h2 className="section-title mt-3">
+              More than a room <span className="neon-magenta">full of PCs</span>
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-zinc-400">
+              {lounge.name} runs the competitive end of Lebanese gaming - brackets that pay out,
+              finals with an audience, and a community that shows up for both.
             </p>
-            <div className="mx-auto mt-8 max-w-xl rounded-2xl border-2 border-neon-magenta/60 bg-neon-magenta/5 px-6 py-5 animate-pulseGlow">
-              <p className="flex items-center justify-center gap-2 font-display text-sm sm:text-base font-bold uppercase tracking-[0.2em] text-neon-magenta">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-magenta opacity-75" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-neon-magenta" />
-                </span>
-                Playing for {tournament.prizePool} in cash
-              </p>
-              <p className="mt-3 text-xs uppercase tracking-[0.3em] text-muted">Champions take home</p>
-              <p className="prize-gold mt-1 font-display text-3xl sm:text-4xl font-black">{firstPlace.label}</p>
-              <p className="mt-2 text-xs text-zinc-500">
-                {prizes.slice(1).map((p) => `${p.ordinal} ${p.label}`).join(" · ")}
-              </p>
-              <Link href="/prizes" className="btn-primary btn-sm mt-4">
-                Full prize breakdown
-              </Link>
-            </div>
+          </div>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2">
+            {loungeOfferings.map((o, i) => (
+              <div key={o.title} data-reveal style={{ transitionDelay: `${i * 100}ms` }}>
+                <TiltCard max={5}>
+                  <article className="card-glow h-full p-7">
+                    <span
+                      className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border font-display text-sm font-black ${accentRing[o.accent]} ${accentText[o.accent]}`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className={`mt-4 font-display text-xl font-bold uppercase tracking-wide ${accentText[o.accent]}`}>
+                      {o.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-relaxed text-zinc-400">{o.body}</p>
+                  </article>
+                </TiltCard>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <hr className="tube mx-auto max-w-4xl" />
+      {/* ---------- TOURNAMENTS ---------- */}
+      <section id="tournaments" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20">
+        <div data-reveal className="text-center">
+          <p className="section-eyebrow">Tournaments</p>
+          <h2 className="section-title mt-3">
+            The <span className="neon-cyan">events</span>
+          </h2>
+          <div className="rule-draw mx-auto mt-6 max-w-xs" />
+        </div>
 
-      {/* ---------- KEY FACTS ---------- */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((s) => (
-            <div key={s.label} className="card-glow p-6 text-center">
-              <p className={`font-display text-2xl sm:text-3xl font-bold ${s.accent}`}>{s.value}</p>
-              <p className="mt-2 text-xs uppercase tracking-[0.25em] text-muted">{s.label}</p>
+        <div className="mt-12 space-y-5">
+          {tournamentIndex.map((t) => {
+            const status = statusStyles[t.status];
+            return (
+              <div key={t.slug} data-reveal>
+                <Link href={t.href} className="group block">
+                  <article className="neon-frame overflow-hidden rounded-2xl p-7 sm:p-9">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className={`pill ${status.cls}`}>{status.label}</span>
+                          <span className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
+                            {t.game}
+                          </span>
+                        </div>
+
+                        <h3 className="mt-4 font-display text-3xl font-black uppercase leading-none sm:text-5xl">
+                          <span className="heatwave-text">{t.shortName}</span>
+                        </h3>
+
+                        <p className="mt-3 text-sm text-zinc-400">
+                          {t.format} · {t.dateLabel}
+                          {t.partner ? ` · with ${t.partner}` : ""}
+                        </p>
+
+                        <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+                          <div>
+                            <p className="prize-gold font-display text-2xl font-black">{t.prizePool}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted">Prize pool</p>
+                          </div>
+                          <div>
+                            <p className="font-display text-2xl font-black text-neon-cyan">
+                              {tournament.maxTeams}
+                            </p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted">Teams</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="shrink-0 lg:text-right">
+                        <span className="btn-primary btn-sm transition-transform duration-300 group-hover:translate-x-1">
+                          Open the archive →
+                        </span>
+                        <p className="mt-3 text-xs text-muted">
+                          Prizes · Rules · Sponsors · Leave a review
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        <p data-reveal className="mt-8 text-center text-sm text-zinc-500">
+          Next event not announced yet -{" "}
+          <a
+            href={lounge.discordUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-neon-cyan hover:underline"
+          >
+            the Discord hears first
+          </a>
+          .
+        </p>
+      </section>
+
+      {/* ---------- BRAND MOMENT ---------- */}
+      <section className="relative overflow-hidden border-y border-edge/50 py-20">
+        <div className="absolute inset-0 grid-bg" aria-hidden />
+        <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-10 px-4 text-center lg:flex-row lg:text-left">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/respawn-death-respawn.webp"
+            alt=""
+            data-reveal
+            className="h-40 w-auto drop-shadow-[0_0_36px_rgba(232,121,249,0.4)] sm:h-52"
+          />
+          <div data-reveal style={{ transitionDelay: "120ms" }}>
+            <h2 className="font-display text-3xl font-black uppercase leading-tight sm:text-5xl">
+              <span className="glitch" data-text="Lose the round.">
+                Lose the round.
+              </span>
+              <br />
+              <span className="neon-cyan">Respawn.</span>{" "}
+              <span className="text-zinc-300">Run it back.</span>
+            </h2>
+            <p className="mt-5 max-w-lg text-zinc-400">
+              Every bracket has one winner and fifteen teams that come back sharper. That is the whole
+              point of the name - and of the room.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- VISIT ---------- */}
+      <section id="visit" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20">
+        <div data-reveal className="text-center">
+          <p className="section-eyebrow">Get in touch</p>
+          <h2 className="section-title mt-3">
+            Find <span className="neon-magenta">the lounge</span>
+          </h2>
+          <div className="rule-draw mx-auto mt-6 max-w-xs" />
+        </div>
+
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div data-reveal>
+            <TiltCard max={5}>
+              <a href={lounge.discordUrl} target="_blank" rel="noreferrer" className="card-glow block h-full p-7">
+                <p className="field-label">Community</p>
+                <p className="font-display text-xl font-bold text-neon-violet">Discord</p>
+                <p className="mt-2 text-sm text-zinc-400">
+                  Announcements, scrims, roster hunting and every event drop.
+                </p>
+                <span className="mt-4 inline-block text-sm font-semibold text-neon-cyan">Join →</span>
+              </a>
+            </TiltCard>
+          </div>
+
+          <div data-reveal style={{ transitionDelay: "90ms" }}>
+            <TiltCard max={5}>
+              <a href={telHref} className="card-glow block h-full p-7">
+                <p className="field-label">Talk to us</p>
+                <p className="font-display text-xl font-bold text-neon-cyan">{lounge.phone}</p>
+                <p className="mt-2 text-sm text-zinc-400">
+                  Bookings, tournament questions, or anything the site does not answer.
+                </p>
+                <span className="mt-4 inline-block text-sm font-semibold text-neon-cyan">Call →</span>
+              </a>
+            </TiltCard>
+          </div>
+
+          {lounge.address ? (
+            <div data-reveal style={{ transitionDelay: "180ms" }}>
+              <TiltCard max={5}>
+                <div className="card-glow h-full p-7">
+                  <p className="field-label">Where</p>
+                  <p className="font-display text-xl font-bold text-neon-magenta">{lounge.address}</p>
+                  {lounge.hours && <p className="mt-2 text-sm text-zinc-400">{lounge.hours}</p>}
+                  {lounge.mapsUrl && (
+                    <a
+                      href={lounge.mapsUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-block text-sm font-semibold text-neon-cyan"
+                    >
+                      Get directions →
+                    </a>
+                  )}
+                </div>
+              </TiltCard>
             </div>
-          ))}
+          ) : (
+            <div data-reveal style={{ transitionDelay: "180ms" }}>
+              <TiltCard max={5}>
+                <div className="card-glow h-full p-7">
+                  <p className="field-label">Where</p>
+                  <p className="font-display text-xl font-bold text-neon-magenta">Lebanon</p>
+                  <p className="mt-2 text-sm text-zinc-400">
+                    Message us for directions and opening hours - we will point you straight to the door.
+                  </p>
+                </div>
+              </TiltCard>
+            </div>
+          )}
         </div>
-        <div className="card mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4">
-          <p className="text-sm text-zinc-400">
-            <span className="text-neon-cyan font-semibold">Prize distribution:</span>{" "}
-            {prizes.map((p) => `${p.ordinal} ${p.label}`).join(" · ")}
-          </p>
-          <Link href="/prizes" className="text-sm font-semibold text-neon-magenta hover:text-neon-pink transition-colors">
-            See the full breakdown →
-          </Link>
-        </div>
-      </section>
-
-      {/* ---------- HOW IT WORKS ---------- */}
-      <section className="mx-auto max-w-6xl px-4 py-10 pb-4">
-        <p className="section-eyebrow text-center">Path to the server</p>
-        <h2 className="mt-3 text-center font-display text-3xl sm:text-4xl font-bold uppercase">
-          From first pistol round to <span className="neon-cyan">the payout</span>
-        </h2>
-
-        <ol className="mt-12 grid gap-4 md:grid-cols-4">
-          {flow.map((step, i) => (
-            <li key={step.title} className="card-glow relative p-6">
-              <span className="font-mono text-xs text-neon-magenta">STEP {i + 1} / 4</span>
-              <h3 className="mt-3 font-display text-lg font-bold">{step.title}</h3>
-              <p className="mt-2 text-sm text-zinc-400 leading-relaxed">{step.desc}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* ---------- ABOUT / SEO ---------- */}
-      <section className="mx-auto max-w-4xl px-4 py-14 text-center">
-        <p className="section-eyebrow">The Venue</p>
-        <h2 className="mt-3 font-display text-3xl sm:text-4xl font-bold uppercase">
-          Lebanon&apos;s <span className="neon-magenta">esports arena</span>
-        </h2>
-        <p className="mx-auto mt-5 max-w-2xl text-zinc-400 leading-relaxed">
-          {tournament.organizer} is a premier gaming lounge in Lebanon and the home of competitive
-          Counter-Strike 2. Together with {tournament.partner}, the Lebanese Esports Federation, we host
-          esports tournaments that bring the local scene together - online on Faceit, with the semifinals
-          and finals played live on stage at the lounge in front of a crowd.
-        </p>
-        <p className="mx-auto mt-4 max-w-2xl text-zinc-400 leading-relaxed">
-          Whether you grind Faceit from home or pull up to the best gaming setup in town, {tournament.shortName}{" "}
-          is your shot at a {tournament.prizePool} prize pool - and at settling who really runs Lebanon&apos;s CS2 scene.
-        </p>
       </section>
 
       {/* ---------- FINAL CTA ---------- */}
-      <section className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <div className="card relative overflow-hidden p-10 sm:p-14">
+      <section className="mx-auto max-w-4xl px-4 pb-20">
+        <div data-reveal className="card relative overflow-hidden p-10 text-center sm:p-14">
           <div className="absolute inset-0 grid-bg" aria-hidden />
           <div className="relative">
-            <h2 className="font-display text-3xl sm:text-4xl font-black uppercase">
-              <span className="prize-gold">{tournament.prizePool}</span> on the line
+            <h2 className="font-display text-3xl font-black uppercase sm:text-4xl">
+              Ready for <span className="neon-cyan">the next one?</span>
             </h2>
             <p className="mx-auto mt-4 max-w-md text-zinc-400">
-              {tournament.maxTeams} teams, one bracket, four places that pay. See exactly what every
-              podium finish is worth.
+              Look at what {tournament.shortName} paid out, then get in the Discord so you hear about
+              the next bracket before it fills.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/prizes" className="btn-primary px-9 py-4">
-                Prize Distribution
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link href={routes.prizes} className="btn-primary px-9 py-4">
+                See the prize pool
               </Link>
               <a
-                href={tournament.discordServerUrl}
+                href={lounge.discordUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="btn-ghost px-9 py-4"

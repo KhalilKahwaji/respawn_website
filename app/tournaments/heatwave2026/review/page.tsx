@@ -1,13 +1,13 @@
 import HeroBackground from "@/components/HeroBackground";
 import ReviewForm from "@/components/ReviewForm";
-import { tournament } from "@/lib/config";
+import { routes, tournament } from "@/lib/config";
 
 export const metadata = {
   title: "Leave a Review",
   description:
     `Tell us what you thought of ${tournament.name}. Anonymous feedback in under a minute - ` +
     `it's how ${tournament.organizer} makes the next CS2 tournament in Lebanon better.`,
-  alternates: { canonical: "/review" },
+  alternates: { canonical: routes.review },
 };
 
 export default function ReviewPage() {
@@ -23,7 +23,7 @@ export default function ReviewPage() {
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base text-zinc-400 animate-rise sm:text-lg">
             Give us a {" "}
-            <span className="text-neon-magenta font-semibold">100% anonymous</span>review so we can be better!
+            <span className="text-neon-magenta font-semibold">100% anonymous</span> review so we can be better!
           </p>
         </div>
       </section>

@@ -1,5 +1,5 @@
 import { serviceClient } from "@/lib/supabase-server";
-import { features } from "@/lib/config";
+import { features, routes } from "@/lib/config";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -10,7 +10,7 @@ export const metadata = features.publicTeamsPage
       title: "Approved Teams",
       description:
         "The confirmed CS2 lineups competing in Lebanon's Respawn Heatwave 2026 esports tournament - every roster here has been verified and approved.",
-      alternates: { canonical: "/teams" },
+      alternates: { canonical: routes.teams },
     }
   : { title: "Approved Teams", robots: { index: false, follow: false } };
 
@@ -61,7 +61,7 @@ export default async function TeamsPage() {
         <div className="card mt-10 p-12 text-center">
           <p className="font-display text-xl text-zinc-400">No approved teams yet</p>
           <p className="mt-2 text-sm text-zinc-500">Be the first lineup on the board.</p>
-          <Link href="/prizes" className="btn-primary mt-6">See the prize pool</Link>
+          <Link href={routes.prizes} className="btn-primary mt-6">See the prize pool</Link>
         </div>
       ) : (
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

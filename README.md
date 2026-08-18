@@ -58,7 +58,7 @@ Everything configurable lives in [`lib/config.ts`](lib/config.ts):
 - Faceit tournament URL (shown to approved teams)
 - Registration code prefix (`RGL-CS2`)
 
-The rules text is in [`app/rules/page.tsx`](app/rules/page.tsx) as a simple editable array of sections.
+The rules text is in [`app/tournaments/heatwave2026/rules/page.tsx`](app/tournaments/heatwave2026/rules/page.tsx) as a simple editable array of sections.
 
 ## 5. Run it
 
@@ -81,9 +81,23 @@ Admin dashboard: `http://localhost:3000/admin` (redirects to login).
 
 Admin dashboard → **Export CSV**. The file is UTF-8 with BOM (opens cleanly in Excel) and has **one row per player** with team columns repeated, which imports nicely into Google Sheets (`File → Import`).
 
+## Site structure
+
+The root of the site is the **gaming lounge** - the business. Everything about a single event lives under `/tournaments/<slug>`, so the next tournament is a new folder rather than a rewrite of the home page.
+
+Every internal link goes through the `routes` map in [`lib/config.ts`](lib/config.ts), which is derived from `TOURNAMENT_BASE`. Moving or archiving an event is a one-line change there, not a find-and-replace.
+
+Old URLs (`/prizes`, `/rules`, `/review`, `/reviews`, `/sponsors`, `/teams`, `/payment/<code>`) redirect to their new homes from `next.config.mjs`. They are **temporary** 307s on purpose - browsers cache permanent redirects almost forever, so this stays reversible. Flip `permanent: true` once the structure is settled.
+
+### Editing the landing page
+
+Lounge copy lives in the `lounge`, `loungeOfferings`, `loungeStats` and `tournamentIndex` exports in [`lib/config.ts`](lib/config.ts). A few fields are deliberately `null` - `address`, `hours`, `mapsUrl`, `instagramUrl`, `tiktokUrl`. The page hides those blocks rather than shipping an invented address or opening hours; fill one in and its section appears on its own (the address also flows into the Organization structured data).
+
+Add the next event to the top of `tournamentIndex` and it shows up in the "The events" section with the right status pill.
+
 ## Anonymous reviews
 
-`/review` collects post-tournament feedback: three 1-10 star questions plus a free-text box, **all optional** (a submission just has to carry at least one answer). The questions live in `REVIEW_QUESTIONS` in [`lib/config.ts`](lib/config.ts) - the form, the API validator and the admin view all read from that one list, so editing a question there is enough.
+`/tournaments/heatwave2026/review` (the shared `/review` and `/reviews` links redirect there) collects post-tournament feedback: three 1-10 star questions plus a free-text box, **all optional** (a submission just has to carry at least one answer). The questions live in `REVIEW_QUESTIONS` in [`lib/config.ts`](lib/config.ts) - the form, the API validator and the admin view all read from that one list, so editing a question there is enough.
 
 Read them in the dashboard at **/admin/reviews** (linked from the top of the team dashboard): per-question averages, filters for written-only and low scores, full-text search over the comments, and a delete button for spam.
 
@@ -120,15 +134,18 @@ See the setup checklist (secrets to add, CLI deploy commands, webhook config) wh
 
 ```
 app/
-  page.tsx               # Landing page (hero, countdown, stats, how it works)
-  register/              # Team registration form
-  payment/[code]/        # Success + Whish instructions + proof upload
-  status/                # Check registration status (code or phone)
-  teams/                 # Public approved teams
-  rules/                 # Tournament rules (editable array)
-  review/                # Anonymous post-tournament feedback form
-  admin/                 # Protected dashboard (+ /admin/login, /admin/reviews)
-  api/                   # All server-side data access
+  page.tsx                       # Gaming lounge landing page (site root)
+  tournaments/heatwave2026/      # Everything about the one event
+    page.tsx                     #   Tournament landing (hero, countdown, format)
+    layout.tsx                   #   Event-level SEO + Event structured data
+    prizes/                      #   Prize pool, podium and split
+    rules/                       #   Tournament rules (editable array)
+    teams/                       #   Public approved teams (feature-flagged)
+    review/                      #   Anonymous post-tournament feedback form
+    sponsors/                    #   Sponsors and partners
+    payment/[code]/              #   Whish instructions + proof upload
+  admin/                         # Protected dashboard (+ /admin/login, /admin/reviews)
+  api/                           # All server-side data access
 components/              # Navbar, StatusPill, Countdown
 lib/                     # config, types, zod validation, supabase clients, faceit
 supabase/schema.sql      # Complete database + storage setup

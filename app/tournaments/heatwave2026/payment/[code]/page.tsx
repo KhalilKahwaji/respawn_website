@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { tournament } from "@/lib/config";
+import { routes, tournament } from "@/lib/config";
 import { validateImage } from "@/lib/validation";
 
 export default function PaymentPage({ params }: { params: { code: string } }) {
@@ -69,7 +69,7 @@ export default function PaymentPage({ params }: { params: { code: string } }) {
             <span className="code-chip">{code}</span>.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
-            <Link href="/" className="btn-primary">Back home</Link>
+            <Link href={routes.tournament} className="btn-primary">Back to the tournament</Link>
             <a href={tournament.discordServerUrl} target="_blank" rel="noreferrer" className="btn-ghost">
               Join Discord
             </a>

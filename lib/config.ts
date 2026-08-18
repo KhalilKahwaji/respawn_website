@@ -6,6 +6,26 @@
 // ISO date string used by the countdown timer.
 const startDate = "2026-08-10T18:00:00+03:00";
 
+/**
+ * Where the Heatwave 2026 tournament lives in the URL tree. Every internal
+ * link goes through `routes` below, so archiving this event (or standing up
+ * the next one) is a one-line change here rather than a find-and-replace.
+ */
+export const TOURNAMENT_BASE = "/tournaments/heatwave2026";
+
+export const routes = {
+  /** Gaming lounge landing page - the root of the site. */
+  home: "/",
+  /** Heatwave 2026 tournament landing page. */
+  tournament: TOURNAMENT_BASE,
+  prizes: `${TOURNAMENT_BASE}/prizes`,
+  rules: `${TOURNAMENT_BASE}/rules`,
+  teams: `${TOURNAMENT_BASE}/teams`,
+  review: `${TOURNAMENT_BASE}/review`,
+  sponsors: `${TOURNAMENT_BASE}/sponsors`,
+  payment: (code: string) => `${TOURNAMENT_BASE}/payment/${code}`,
+} as const;
+
 export const tournament = {
   name: "RESPAWN HEATWAVE 2026",
   shortName: "Heatwave 2026",
@@ -124,3 +144,94 @@ export const STATUS_LABELS: Record<TeamStatus, string> = {
   rejected: "Rejected",
   missing_info: "Missing Information",
 };
+
+/**
+ * Gaming lounge content for the site root. This is the business itself,
+ * separate from any single tournament.
+ *
+ * Fields typed `| null` are deliberately unset: the landing page hides those
+ * blocks entirely rather than ship an invented address or opening hours on a
+ * real business's homepage. Fill one in and its section appears on its own.
+ */
+export const lounge = {
+  name: "Respawn Gaming Lounge",
+  shortName: "Respawn",
+  /** Split so the hero can animate the wordmark letter by letter. */
+  wordmark: "RESPAWN",
+  tagline: "Lebanon's home for competitive gaming",
+  blurb:
+    "A gaming lounge and esports venue in Lebanon - open play on serious hardware, " +
+    "and the stage where the country's biggest Counter-Strike finals get played in front of a crowd.",
+  phone: tournament.contactPhone,
+  discordUrl: tournament.discordServerUrl,
+
+  // ---- Fill these in to light up the matching blocks -------------------
+  /** Street address, e.g. "Main St, Jounieh, Lebanon". */
+  address: null as string | null,
+  /** Google Maps link for the "Get directions" button. */
+  mapsUrl: null as string | null,
+  /** Opening hours, e.g. "Daily · 2 PM - 2 AM". */
+  hours: null as string | null,
+  instagramUrl: null as string | null,
+  tiktokUrl: null as string | null,
+};
+
+/**
+ * What the lounge does, shown as the feature grid on the landing page.
+ * Every claim here is drawn from the tournament pages' own copy - keep it
+ * that way, or update both.
+ */
+export const loungeOfferings = [
+  {
+    title: "Competitive tournaments",
+    body: `Cash-prize events run end to end - registration, seeding, brackets and payouts. Heatwave 2026 put ${tournament.prizePool} on the line across ${tournament.maxTeams} teams.`,
+    accent: "cyan",
+  },
+  {
+    title: "Live esports arena",
+    body: "Semifinals and grand finals are played on stage at the lounge, in front of a crowd - not just another lobby on the internet.",
+    accent: "magenta",
+  },
+  {
+    title: "Online + LAN hybrid",
+    body: "Group stages run online on Faceit so anyone in the country can enter, then the surviving teams come to the venue for the finish.",
+    accent: "violet",
+  },
+  {
+    title: "A scene, not a queue",
+    body: "A Discord full of players, teams and admins - where rosters get built, matches get scheduled and the next event gets announced first.",
+    accent: "cyan",
+  },
+] as const;
+
+/**
+ * Headline numbers on the landing page, animated with a count-up.
+ * All four are derived from real tournament config, not invented.
+ */
+export const loungeStats = [
+  { value: prizePoolTotal, prefix: "$", suffix: "", label: "Prize pool paid" },
+  { value: tournament.maxTeams, prefix: "", suffix: "", label: "Teams entered" },
+  { value: tournament.maxTeams * PRIZE_SPLIT_PLAYERS, prefix: "", suffix: "", label: "Players on server" },
+  { value: 1, prefix: "", suffix: "", label: "Champion crowned" },
+] as const;
+
+/**
+ * Tournament archive shown on the landing page. Add the next event to the
+ * top of this list when it's announced.
+ */
+export const tournamentIndex = [
+  {
+    slug: "heatwave2026",
+    name: tournament.name,
+    shortName: tournament.shortName,
+    href: routes.tournament,
+    game: "Counter-Strike 2",
+    format: tournament.format,
+    prizePool: tournament.prizePool,
+    dateLabel: tournament.startDateLabel,
+    /** ISO date used to decide whether the event is upcoming or finished. */
+    date: tournament.startDate,
+    partner: tournament.partner,
+    status: "finished" as "finished" | "upcoming" | "live",
+  },
+];

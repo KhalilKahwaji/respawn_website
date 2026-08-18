@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSponsors } from "@/lib/sponsors";
 import type { Sponsor } from "@/lib/types";
+import { routes } from "@/lib/config";
 
 /**
  * Sponsor logo strip shown in the footer. Server component - reads the same
@@ -39,7 +40,7 @@ export default async function FooterSponsors() {
             ))}
           </div>
           <Link
-            href="/sponsors"
+            href={routes.sponsors}
             className="text-xs font-semibold uppercase tracking-widest text-neon-cyan/80 transition-colors hover:text-neon-cyan"
           >
             View all partners →

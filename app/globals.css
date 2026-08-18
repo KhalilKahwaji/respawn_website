@@ -636,3 +636,350 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   Gaming lounge landing page
+   ============================================================ */
+
+/* ---------- Scroll progress bar (components/ScrollProgress) ---------- */
+.scroll-progress-bar {
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--cyan), var(--violet), var(--magenta));
+  box-shadow: 0 0 12px rgba(79, 227, 255, 0.6);
+}
+
+/* ---------- Nav underline sweep ---------- */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.875rem;
+  right: 0.875rem;
+  bottom: 0.35rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Pointer-tracking spotlight ---------- */
+/* --mx and --my are written by the hero client component on pointer move. */
+.spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    620px circle at var(--mx, 50%) var(--my, 38%),
+    rgba(79, 227, 255, 0.12),
+    rgba(232, 121, 249, 0.05) 35%,
+    transparent 62%
+  );
+}
+
+/* ---------- CRT scanlines + vignette ---------- */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.028) 0 1px,
+    transparent 1px 3px
+  );
+}
+.vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(ellipse 90% 70% at 50% 45%, transparent 45%, rgba(7, 6, 11, 0.75) 100%);
+}
+
+/* ---------- Kinetic wordmark ---------- */
+.kinetic {
+  display: inline-flex;
+  perspective: 800px;
+}
+.kinetic > span {
+  display: inline-block;
+  animation: letterIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Transform and opacity only - a `filter` here would paint each letter into
+   its own layer, and since the letters inherit `color: transparent` from the
+   gradient wordmark, they would vanish instead of blurring. */
+@keyframes letterIn {
+  0% {
+    opacity: 0;
+    transform: translateY(0.45em) rotateX(-75deg) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The wordmark is coloured per letter (see components/LoungeHero) rather than
+   with a single `background-clip: text` gradient. The letters animate with
+   transforms inside a `perspective` parent, and that stacking context stops a
+   clipped background on the parent from ever reaching the glyphs - the whole
+   word renders invisible. Per-letter colour + a currentColor glow gives the
+   same cyan-to-magenta sweep and always paints. */
+.wordmark > span {
+  text-shadow:
+    0 0 12px currentColor,
+    0 0 44px currentColor;
+}
+/* Slow breathing glow over the finished word. */
+.wordmark {
+  animation: wordmarkBreathe 5s ease-in-out 1.4s infinite;
+}
+@keyframes wordmarkBreathe {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.18); }
+}
+
+/* ---------- Glitch text ---------- */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch::before {
+  color: var(--cyan);
+  clip-path: inset(0 0 58% 0);
+  animation: glitchTop 4.2s infinite steps(2, end);
+}
+.glitch::after {
+  color: var(--magenta);
+  clip-path: inset(58% 0 0 0);
+  animation: glitchBottom 4.2s infinite steps(2, end);
+}
+@keyframes glitchTop {
+  0%, 88%, 100% { transform: translate(0, 0); opacity: 0; }
+  90%           { transform: translate(-2px, -1px); opacity: 0.85; }
+  94%           { transform: translate(2px, 1px); opacity: 0.7; }
+}
+@keyframes glitchBottom {
+  0%, 88%, 100% { transform: translate(0, 0); opacity: 0; }
+  91%           { transform: translate(2px, 1px); opacity: 0.85; }
+  96%           { transform: translate(-2px, -1px); opacity: 0.7; }
+}
+
+/* ---------- Orbiting rings behind the hero logo ---------- */
+.orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  border: 1px solid rgba(79, 227, 255, 0.16);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.orbit::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--cyan);
+  box-shadow: 0 0 12px 2px rgba(79, 227, 255, 0.8);
+}
+.orbit.o1 { width: 260px; height: 260px; animation: spin 18s linear infinite; }
+.orbit.o2 {
+  width: 380px; height: 380px;
+  border-color: rgba(232, 121, 249, 0.14);
+  animation: spin 27s linear infinite reverse;
+}
+.orbit.o2::after { background: var(--magenta); box-shadow: 0 0 12px 2px rgba(232, 121, 249, 0.8); }
+.orbit.o3 {
+  width: 520px; height: 520px;
+  border-color: rgba(167, 139, 250, 0.1);
+  animation: spin 38s linear infinite;
+}
+.orbit.o3::after { background: var(--violet); box-shadow: 0 0 12px 2px rgba(167, 139, 250, 0.8); }
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ---------- Gentle float ---------- */
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+/* ---------- Marquee ticker ---------- */
+.marquee {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 34s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0 1.25rem;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(228, 228, 231, 0.75);
+}
+.marquee-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--magenta);
+  box-shadow: 0 0 10px 1px rgba(232, 121, 249, 0.7);
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- 3D tilt cards ---------- */
+/* --rx and --ry are written by components/TiltCard on pointer move. */
+.tilt {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  will-change: transform;
+}
+.tilt-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(
+    320px circle at var(--px, 50%) var(--py, 50%),
+    rgba(255, 255, 255, 0.09),
+    transparent 65%
+  );
+}
+.tilt:hover .tilt-sheen {
+  opacity: 1;
+}
+
+/* ---------- Animated neon frame ---------- */
+.neon-frame {
+  position: relative;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(#0d0c15, #0d0c15) padding-box,
+    linear-gradient(120deg, var(--cyan), var(--magenta), var(--violet), var(--cyan)) border-box;
+  background-size: 100% 100%, 300% 300%;
+  animation: sponsorBorder 8s ease infinite;
+}
+
+/* ---------- Section headings ---------- */
+.section-title {
+  @apply font-display text-3xl font-bold uppercase sm:text-5xl;
+}
+
+/* Thin neon rule that draws itself in when the block scrolls into view. */
+.rule-draw {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal].is-in .rule-draw {
+  transform: scaleX(1);
+}
+
+/* ---------- Stat tiles ---------- */
+.stat-tile {
+  @apply card relative overflow-hidden p-6 text-center;
+}
+.stat-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(79, 227, 255, 0.08), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.stat-tile:hover::before {
+  opacity: 1;
+}
+
+/* ---------- Scroll cue ---------- */
+.scroll-cue {
+  width: 26px;
+  height: 42px;
+  border: 1.5px solid rgba(79, 227, 255, 0.4);
+  border-radius: 9999px;
+  position: relative;
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 3px;
+  height: 7px;
+  margin-left: -1.5px;
+  border-radius: 9999px;
+  background: var(--cyan);
+  box-shadow: 0 0 8px rgba(79, 227, 255, 0.8);
+  animation: scrollCue 1.9s ease-in-out infinite;
+}
+@keyframes scrollCue {
+  0%, 100% { transform: translateY(0); opacity: 0; }
+  25%      { opacity: 1; }
+  75%      { transform: translateY(16px); opacity: 0; }
+}
+
+/* ---------- Live status dot ---------- */
+.status-dot {
+  position: relative;
+  display: inline-flex;
+  width: 0.5rem;
+  height: 0.5rem;
+}
+.status-dot > i {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+}
+.status-dot > i:first-child {
+  animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0.75;
+}
+@keyframes ping {
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { features } from "@/lib/config";
+import { TOURNAMENT_BASE, features, routes } from "@/lib/config";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,12 +8,12 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         // Keep private/admin surfaces and per-team payment pages out of search.
-        // The public roster is added while it's hidden so crawlers drop it.
+        // The public roster is listed while it's hidden so crawlers drop it.
         disallow: [
           "/admin",
           "/api/",
-          "/payment/",
-          ...(features.publicTeamsPage ? [] : ["/teams"]),
+          `${TOURNAMENT_BASE}/payment/`,
+          ...(features.publicTeamsPage ? [] : [routes.teams]),
         ],
       },
     ],

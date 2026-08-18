@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HeroBackground from "@/components/HeroBackground";
+import { routes } from "@/lib/config";
 
 export const metadata = { title: "Page Not Found - Respawn" };
 
@@ -30,7 +31,7 @@ export default function NotFound() {
           <Link href="/" className="btn-primary text-base px-9 py-4">
             Back to Base
           </Link>
-          <Link href="/rules" className="btn-ghost text-base px-9 py-4">
+          <Link href={routes.rules} className="btn-ghost text-base px-9 py-4">
             View Rules
           </Link>
         </div>
